@@ -30,10 +30,16 @@ open class TestLinter(private val reader: IReader) : ILinter {
         val errors: ArrayList<Error> = arrayListOf()
         if (filePath.isNotBlank()) {
             if (!reader.fileExists(filePath)) {
-                errors.add(model.Error("File '$filePath' is not found", model.Error.Type.MISSING_FILE))
+                errors.add(model.Error(
+                        message = "File '$filePath' is not found",
+                        type = model.Error.Type.MISSING_FILE,
+                        documentation = "https://github.com/simonjohansson/linter/wiki/Test#missing_file"))
             }
             if (reader.fileExists(filePath) and !reader.fileExecutable(filePath)) {
-                errors.add(Error("File '$filePath' is not executable", model.Error.Type.NOT_EXECUTABLE))
+                errors.add(Error(
+                        message = "File '$filePath' is not executable",
+                        type = model.Error.Type.NOT_EXECUTABLE,
+                        documentation = "https://github.com/simonjohansson/linter/wiki/Test#not_executable"))
             }
         }
         return errors

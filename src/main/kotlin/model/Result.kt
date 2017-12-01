@@ -2,7 +2,8 @@ package model
 
 data class Error(
         val message: String,
-        val type: Error.Type
+        val type: Error.Type,
+        val documentation: String = ""
 ) {
     enum class Type {
         MISSING_FIELD,
@@ -12,26 +13,9 @@ data class Error(
     }
 }
 
-data class Warning(
-        val message: String,
-        val type: Warning.Type
-) {
-    enum class Type {
-    }
-}
-
-data class Information(
-        val message: String,
-        val type: Information.Type
-) {
-    enum class Type {
-    }
-}
-
 data class Result(
         val linter: String,
-        val errors: List<Error> = listOf(),
-        val warning: List<Warning> = listOf()
+        val errors: List<Error> = listOf()
 ) {
     fun hasErrors() = errors.isNotEmpty()
 }

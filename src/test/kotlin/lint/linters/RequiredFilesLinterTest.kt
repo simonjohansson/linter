@@ -31,9 +31,6 @@ class RequiredFilesLinterTest {
 
         val linter = RequiredFilesLinter(reader)
         val result = linter.lint()
-        assertThat(result).isEqualTo(Result(
-                linter = linter.name(),
-                errors = listOf(model.Error("'.ci.yml' file is missing", Error.Type.MISSING_FILE))
-        ))
+        assertErrorMessage(result, "'.ci.yml' file is missing")
     }
 }

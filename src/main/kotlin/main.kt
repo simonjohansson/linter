@@ -11,8 +11,11 @@ import kotlin.system.exitProcess
 fun printResult(result: Result) {
     println("${result.linter}")
     if (result.hasErrors()) {
-        for (error in result.errors)
+        for (error in result.errors) {
             println("\t${error.type}\t\t${error.message}")
+            println("\t\t\t\t${error.documentation}")
+            println()
+        }
     } else {
         println("\tNo errors!")
     }

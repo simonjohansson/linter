@@ -22,9 +22,7 @@ class RequiredFieldsLinterTest {
         val linter = RequiredFieldsLinter()
         val result = linter.lint(manifest)
 
-        assertThat(
-                Error("Required top level field 'org' missing", Error.Type.MISSING_FIELD)
-        ).isIn(result.errors)
+        assertErrorMessageInResults(result, "Required top level field 'org' missing")
     }
 
     @Test
@@ -32,11 +30,7 @@ class RequiredFieldsLinterTest {
         val manifest = Manifest(org = "yolo")
         val linter = RequiredFieldsLinter()
         val result = linter.lint(manifest)
-
-        assertThat(
-                Error("Tasks is empty...", Error.Type.MISSING_FIELD)
-        ).isIn(result.errors)
-
+        assertErrorMessageInResults(result, "Tasks is empty...")
     }
 
     @Test
@@ -45,11 +39,7 @@ class RequiredFieldsLinterTest {
         val linter = RequiredFieldsLinter()
         val result = linter.lint(manifest)
 
-
-        assertThat(
-                Error("Required top level field 'repo' missing", Error.Type.MISSING_FIELD)
-        ).isIn(result.errors)
-
+        assertErrorMessageInResults(result, "Required top level field 'repo' missing")
     }
 
     @Test

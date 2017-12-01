@@ -19,8 +19,11 @@ open class RepoLinter : ILinter {
             return Result(
                     linter = this.name(),
                     errors = listOf(
-                            model.Error("'${manifest.repo}' does not look like a real repo!", Error.Type.BAD_VALUE)
-                    )
+                            model.Error(
+                                    message = "'${manifest.repo}' does not look like a real repo!",
+                                    type = Error.Type.BAD_VALUE,
+                                    documentation = "https://github.com/simonjohansson/linter/wiki/Repo#bad_value"
+                            ))
             )
         }
         return Result(linter = this.name())

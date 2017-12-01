@@ -33,12 +33,7 @@ class BuildLinterTest {
         val linter = BuildLinter(reader)
         val result = linter.lint(task)
 
-        Truth.assertThat(result).isEqualTo(
-                Result(
-                        linter = linter.name(),
-                        errors = listOf(Error("File 'build.sh' is not found", Error.Type.MISSING_FILE))
-                )
-        )
+        assertErrorMessageInResults(result, "File 'build.sh' is not found")
     }
 
     @Test
@@ -50,12 +45,7 @@ class BuildLinterTest {
         val linter = BuildLinter(reader)
         val result = linter.lint(task)
 
-        Truth.assertThat(result).isEqualTo(
-                Result(
-                        linter = linter.name(),
-                        errors = listOf(Error("File 'build.sh' is not executable", Error.Type.NOT_EXECUTABLE))
-                )
-        )
+        assertErrorMessageInResults(result, "File 'build.sh' is not executable")
     }
 
     @Test
@@ -66,12 +56,7 @@ class BuildLinterTest {
         val linter = BuildLinter(reader)
         val result = linter.lint(task)
 
-        Truth.assertThat(result).isEqualTo(
-                Result(
-                        linter = linter.name(),
-                        errors = listOf(Error("File 'ci/build.sh' is not found", Error.Type.MISSING_FILE))
-                )
-        )
+        assertErrorMessageInResults(result, "File 'ci/build.sh' is not found")
     }
 
     @Test
@@ -83,12 +68,7 @@ class BuildLinterTest {
         val linter = BuildLinter(reader)
         val result = linter.lint(task)
 
-        Truth.assertThat(result).isEqualTo(
-                Result(
-                        linter = linter.name(),
-                        errors = listOf(Error("File 'ci/build.sh' is not executable", Error.Type.NOT_EXECUTABLE))
-                )
-        )
+        assertErrorMessageInResults(result, "File 'ci/build.sh' is not executable")
     }
 
     @Test

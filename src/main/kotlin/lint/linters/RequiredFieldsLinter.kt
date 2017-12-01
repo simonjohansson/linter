@@ -21,15 +21,27 @@ open class RequiredFieldsLinter() : ILinter {
         val errors: ArrayList<Error> = arrayListOf()
 
         if (manifest.org.isEmpty()) {
-            errors.add(model.Error("Required top level field 'org' missing", Error.Type.MISSING_FIELD))
+            errors.add(model.Error(
+                    message = "Required top level field 'org' missing",
+                    type = Error.Type.MISSING_FIELD,
+                    documentation = "https://github.com/simonjohansson/linter/wiki/Required-Fields#missing_field-org"
+            ))
         }
 
         if (manifest.tasks.isEmpty()) {
-            errors.add(model.Error("Tasks is empty...", Error.Type.MISSING_FIELD))
+            errors.add(model.Error(
+                    message = "Tasks is empty...",
+                    type = Error.Type.MISSING_FIELD,
+                    documentation = "https://github.com/simonjohansson/linter/wiki/Required-Fields#missing_field-tasks"
+            ))
         }
 
         if (manifest.repo.isEmpty()) {
-            errors.add(model.Error("Required top level field 'repo' missing", Error.Type.MISSING_FIELD))
+            errors.add(model.Error(
+                    message = "Required top level field 'repo' missing",
+                    type = Error.Type.MISSING_FIELD,
+                    documentation = "https://github.com/simonjohansson/linter/wiki/Required-Fields#missing_field-repo"
+            ))
         }
 
 
