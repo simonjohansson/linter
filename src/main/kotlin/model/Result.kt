@@ -9,7 +9,8 @@ data class Error(
         MISSING_FIELD,
         MISSING_FILE,
         NOT_EXECUTABLE,
-        BAD_VALUE
+        BAD_VALUE,
+        LINTER_ERROR
     }
 }
 

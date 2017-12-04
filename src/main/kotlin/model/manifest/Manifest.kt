@@ -1,7 +1,5 @@
 package model.manifest
 
-import com.sun.tools.doclint.Env
-
 interface ITask {
     fun name() = when(this) {
         is Run -> this.command

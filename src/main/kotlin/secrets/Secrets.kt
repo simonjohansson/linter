@@ -2,11 +2,12 @@ package secrets
 
 interface ISecrets {
     fun exists(org: String, repoName: String, secret_key: String): Boolean
+    fun haveCredentials(): Boolean
 
 }
 
 class Secrets: ISecrets {
-    override fun exists(org: String, repoName: String, secret_key: String): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun haveCredentials() = true
+
+    override fun exists(org: String, repoName: String, secret_key: String) = false
 }

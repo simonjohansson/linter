@@ -60,17 +60,34 @@ open class DeployLinter(val reader: IReader, val secrets: ISecrets) : ILinter {
             }
 
     private fun environmentSecretsLinter(deploy: Deploy, manifest: Manifest): List<Error> {
-        return deploy.vars.values
+        val secretValues = deploy.vars.values
                 .filter { (it.startsWith("((") and it.endsWith("))")) }
-                .filter { !secrets.exists(manifest.org, manifest.getRepoName(), it) }
-                .map {
-                    val key =it.replace("((", "").replace("))", "")
-                    Error(
-                            message = "Cannot resolve /concourse/${manifest.org}/${manifest.getRepoName()}/$key",
-                            type = Error.Type.BAD_VALUE,
-                            documentation = "https://github.com/simonjohansson/linter/wiki/Deploy#bad_value-secret-value"
-                    )
-                }
+
+        val errors: ArrayList<Error> = arrayListOf()
+        if (secretValues.isNotEmpty()) {
+            if (!secrets.haveCredentials()) {
+                errors.add(Error(
+                        message = "You have secrets in your env map, cannot lint unless you pass credentials with " +
+                                "`-u username -p password` to linter!",
+                        type = Error.Type.LINTER_ERROR,
+                        documentation = "https://github.com/simonjohansson/linter/wiki/Deploy#linter_error"))
+            }
+
+            errors.addAll(secretValues
+                    .filter { secrets.haveCredentials() }
+                    .filter { !secrets.exists(manifest.org, manifest.getRepoName(), it) }
+                    .map {
+                        val key = it.replace("((", "").replace("))", "")
+                        Error(
+                                message = "Cannot resolve '/concourse/${manifest.org}/${manifest.getRepoName()}/$key'",
+                                type = Error.Type.BAD_VALUE,
+                                documentation = "https://github.com/simonjohansson/linter/wiki/Deploy#bad_value-secret-value"
+                        )
+                    }
+            )
+        }
+
+        return errors
     }
 
     override fun lint(task: ITask, manifest: Manifest): Result {

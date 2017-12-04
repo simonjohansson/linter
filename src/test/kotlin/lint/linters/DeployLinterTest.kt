@@ -100,12 +100,30 @@ class DeployLinterTest {
         ))
         val manifest = Manifest(org = "yolo", repo = "https://github.sadlfksdf.com/org/repo-name.git")
         given(reader.fileExists(path)).willReturn(true)
+        given(secrets.haveCredentials()).willReturn(true)
         given(secrets.exists(manifest.org, manifest.getRepoName(), secret_value_found)).willReturn(true)
         given(secrets.exists(manifest.org, manifest.getRepoName(), secret_value_not_found)).willReturn(false)
 
         val result = subject.lint(deploy, manifest)
 
         assertThat(result.errors).hasSize(1)
-        assertErrorMessage(result, "Cannot resolve /concourse/${manifest.org}/${manifest.getRepoName()}/super-secret-not-found")
+        assertErrorMessage(result, "Cannot resolve '/concourse/${manifest.org}/${manifest.getRepoName()}/super-secret-not-found'")
+    }
+
+    @Test
+    fun `Should fail if there are secrets but no credentials supplied`() {
+        val path = "manifest.yml"
+        val deploy = Deploy(env = "live", manifest = path, vars = mapOf(
+                "VAR2" to "((secret-value))"
+        ))
+        val manifest = Manifest(org = "yolo", repo = "https://github.sadlfksdf.com/org/repo-name.git")
+        given(reader.fileExists(path)).willReturn(true)
+        given(secrets.haveCredentials()).willReturn(false)
+
+        val result = subject.lint(deploy, manifest)
+
+        assertThat(result.errors).hasSize(1)
+        assertErrorMessage(result, "You have secrets in your env map, cannot lint unless you pass credentials with " +
+                "`-u username -p password` to linter!")
     }
 }
