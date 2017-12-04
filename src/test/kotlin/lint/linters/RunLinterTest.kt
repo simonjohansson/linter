@@ -2,6 +2,7 @@ package lint.linters
 
 import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
+import junit.framework.Assert.fail
 import model.Result
 import model.manifest.Run
 import org.junit.Before
@@ -116,5 +117,15 @@ class RunLinterTest {
         val result = subject.lint(task)
 
         Truth.assertThat(result).isEqualTo(Result(linter = subject.name()))
+    }
+
+    @Test
+    fun `It lints environment variables for upper case`() {
+        fail("Write test case")
+    }
+
+    @Test
+    fun `It checks that secrets are defined in vault`() {
+        fail("Write test case")
     }
 }
