@@ -1,9 +1,8 @@
-package model
+package model.manifest
 
 interface ITask
 
-data class Build(val command: String = "", val image: String = ""): ITask
-data class Test(val command: String = "", val image: String = ""): ITask
+data class Run(val command: String = "", val image: String = ""): ITask
 data class Deploy(val target: String = ""): ITask
 
 data class Manifest(

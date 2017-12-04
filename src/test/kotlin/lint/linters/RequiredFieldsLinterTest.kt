@@ -1,10 +1,8 @@
 package lint.linters
 
 import com.google.common.truth.Truth.assertThat
-import model.Build
-import model.Error
-import model.Manifest
-import model.Result
+import model.manifest.Manifest
+import model.manifest.Run
 import org.junit.Test
 
 class RequiredFieldsLinterTest {
@@ -22,7 +20,7 @@ class RequiredFieldsLinterTest {
         val linter = RequiredFieldsLinter()
         val result = linter.lint(manifest)
 
-        assertErrorMessageInResults(result, "Required top level field 'org' missing")
+        assertErrorMessage(result, "Required top level field 'org' missing")
     }
 
     @Test
@@ -30,7 +28,8 @@ class RequiredFieldsLinterTest {
         val manifest = Manifest(org = "yolo")
         val linter = RequiredFieldsLinter()
         val result = linter.lint(manifest)
-        assertErrorMessageInResults(result, "Tasks is empty...")
+
+        assertErrorMessage(result, "Tasks is empty...")
     }
 
     @Test
@@ -39,12 +38,16 @@ class RequiredFieldsLinterTest {
         val linter = RequiredFieldsLinter()
         val result = linter.lint(manifest)
 
-        assertErrorMessageInResults(result, "Required top level field 'repo' missing")
+        assertErrorMessage(result, "Required top level field 'repo' missing")
     }
 
     @Test
     fun `no errors if all is ok`() {
-        val manifest = Manifest(org = "yolo", tasks = listOf(Build()), repo = "git@...")
+        val manifest = Manifest(
+                org = "yolo",
+                repo = "git@...",
+                tasks = listOf(Run()))
+
         val linter = RequiredFieldsLinter()
         val result = linter.lint(manifest)
 

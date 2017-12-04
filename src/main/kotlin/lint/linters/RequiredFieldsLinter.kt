@@ -1,10 +1,9 @@
 package lint.linters
 
 import model.Error
-import model.ITask
-import model.Manifest
+import model.manifest.ITask
+import model.manifest.Manifest
 import model.Result
-import reader.IReader
 
 open class RequiredFieldsLinter() : ILinter {
     override fun lint(): Result {

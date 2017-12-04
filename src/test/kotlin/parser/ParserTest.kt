@@ -2,9 +2,9 @@ package parser
 
 import com.google.common.truth.Truth.assertThat
 import junit.framework.Assert.fail
-import model.Build
-import model.Deploy
-import model.Manifest
+import model.manifest.Deploy
+import model.manifest.Manifest
+import model.manifest.Run
 import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito.given
@@ -38,10 +38,10 @@ class ParserTest {
                         org: yolo
                         repo: asd
                         tasks:
-                            - task: build
-                              command: ./build
-                            - task: test
-                              image: python:3.6
+                            - task: run
+                              command: test.sh
+                            - task: run
+                              command: build.sh
                             - task: deploy
                               target: live
                         """)
@@ -52,8 +52,8 @@ class ParserTest {
                         org = "yolo",
                         repo = "asd",
                         tasks = listOf(
-                                Build(command = "./build"),
-                                model.Test(image = "python:3.6"),
+                                Run(command = "test.sh"),
+                                Run(command = "build.sh"),
                                 Deploy(target = "live")
                         )
                 )
@@ -67,8 +67,8 @@ class ParserTest {
         given(reader.readFile(path)).willReturn("""
                         org: yolo
                         tasks:
-                            - task: build
-                              command: ./build
+                            - task: run
+                              command: build.sh
                             - task: ThEfUcK
                               image: python:3.6
                         """)

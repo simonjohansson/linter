@@ -1,8 +1,8 @@
 package lint.linters
 
 import model.Error
-import model.ITask
-import model.Manifest
+import model.manifest.ITask
+import model.manifest.Manifest
 import model.Result
 
 open class RepoLinter : ILinter {

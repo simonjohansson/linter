@@ -1,7 +1,7 @@
 package lint.linters
 
 import com.google.common.truth.Truth.assertThat
-import model.Manifest
+import model.manifest.Manifest
 import org.junit.Test
 
 class RepoLinterTest {
@@ -19,7 +19,8 @@ class RepoLinterTest {
         val manifest = Manifest(repo = repo)
         val result = repoLinter.lint(manifest)
 
-        assertErrorMessageInResults(result, "'$repo' does not look like a real repo!")
+        assertThat(result.errors).hasSize(1)
+        assertErrorMessage(result, "'$repo' does not look like a real repo!")
     }
 
     @Test

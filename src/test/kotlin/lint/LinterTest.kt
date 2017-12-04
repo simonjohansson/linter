@@ -2,9 +2,9 @@ package lint
 
 import com.google.common.truth.Truth.assertThat
 import lint.linters.*
-import model.Build
-import model.Manifest
+import model.manifest.Manifest
 import model.Result
+import model.manifest.Run
 import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito.given
@@ -18,9 +18,8 @@ class LinterTest {
 
     lateinit var requiredFilesLinter: RequiredFilesLinter
     lateinit var requiredFieldsLinter: RequiredFieldsLinter
-    lateinit var testLinter: TestLinter
-    lateinit var buildLinter: BuildLinter
     lateinit var repoLinter: RepoLinter
+    lateinit var runLinter: RunLinter
     lateinit var parser: IParser
     lateinit var linter: Linter
 
@@ -28,16 +27,14 @@ class LinterTest {
     fun setup() {
         requiredFilesLinter = mock(RequiredFilesLinter::class.java)
         requiredFieldsLinter = mock(RequiredFieldsLinter::class.java)
-        testLinter = mock(TestLinter::class.java)
-        buildLinter = mock(BuildLinter::class.java)
         repoLinter = mock(RepoLinter::class.java)
+        runLinter = mock(RunLinter::class.java)
         parser = mock(IParser::class.java)
 
         linter = Linter(
                 requiredFilesLinter,
                 requiredFieldsLinter,
-                testLinter,
-                buildLinter,
+                runLinter,
                 repoLinter,
                 parser
         )
@@ -52,49 +49,45 @@ class LinterTest {
         assertThat(linter.lint()).isEqualTo(listOf(result))
         Mockito.verifyZeroInteractions(requiredFieldsLinter)
         Mockito.verifyZeroInteractions(repoLinter)
-        Mockito.verifyZeroInteractions(testLinter)
-        Mockito.verifyZeroInteractions(buildLinter)
+        Mockito.verifyZeroInteractions(runLinter)
     }
 
     @Test
-    fun `When manifest has one test task and one build task`() {
-        val manifest = Manifest(tasks = listOf(model.Test(), Build()))
+    fun `When manifest has one run task`() {
+        val manifest = Manifest(tasks = listOf(Run()))
         val resulta = Result(linter = "files")
         val resultb = Result(linter = "required")
         val resultc = Result(linter = "repo")
-        val resultd = Result(linter = "test")
-        val resulte = Result(linter = "build")
+        val resultd = Result(linter = "run1")
         given(parser.parseManifest()).willReturn(Optional.of(manifest))
 
         given(requiredFilesLinter.lint()).willReturn(resulta)
         given(requiredFieldsLinter.lint(manifest)).willReturn(resultb)
         given(repoLinter.lint(manifest)).willReturn(resultc)
-        given(testLinter.lint(manifest.tasks[0])).willReturn(resultd)
-        given(buildLinter.lint(manifest.tasks[1])).willReturn(resulte)
+        given(runLinter.lint(manifest.tasks[0])).willReturn(resultd)
 
         linter.lint()
 
-        assertThat(linter.lint()).isEqualTo(listOf(resulta, resultb, resultc, resultd, resulte))
+        assertThat(linter.lint()).isEqualTo(listOf(resulta, resultb, resultc, resultd))
     }
 
     @Test
     fun `When manifest has two test task and one build task`() {
-        val manifest = Manifest(tasks = listOf(model.Test(), Build(), model.Test()))
+        val manifest = Manifest(tasks = listOf(Run("test1"), Run("build"), Run("test2")))
         val resulta = Result(linter = "files")
         val resultb = Result(linter = "required")
         val resultc = Result(linter = "repo")
-        val resultd = Result(linter = "test")
+        val resultd = Result(linter = "test1")
         val resulte = Result(linter = "build")
-        val resultf = Result(linter = "test")
+        val resultf = Result(linter = "test2")
 
         given(parser.parseManifest()).willReturn(Optional.of(manifest))
         given(requiredFilesLinter.lint()).willReturn(resulta)
         given(requiredFieldsLinter.lint(manifest)).willReturn(resultb)
         given(repoLinter.lint(manifest)).willReturn(resultc)
-        given(testLinter.lint(manifest.tasks[0]))
-                .willReturn(resultd)
-                .willReturn(resultf)
-        given(buildLinter.lint(manifest.tasks[1])).willReturn(resulte)
+        given(runLinter.lint(manifest.tasks[0])).willReturn(resultd)
+        given(runLinter.lint(manifest.tasks[1])).willReturn(resulte)
+        given(runLinter.lint(manifest.tasks[2])).willReturn(resultf)
 
         linter.lint()
 

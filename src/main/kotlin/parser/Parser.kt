@@ -3,7 +3,10 @@ package parser
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.google.gson.Gson
-import model.*
+import model.manifest.Deploy
+import model.manifest.ITask
+import model.manifest.Manifest
+import model.manifest.Run
 import reader.IReader
 import java.util.*
 import kotlin.collections.HashMap
@@ -50,8 +53,7 @@ class Parser(val reader: IReader) : IParser {
     }
 
     private fun mapTaskToRealTask(task: HashMap<String, *>): ITask = when (task["task"]) {
-        "build" -> toITask(task, Build::class.java)
-        "test" -> toITask(task, Test::class.java)
+        "run" -> toITask(task, Run::class.java)
         "deploy" -> toITask(task, Deploy::class.java)
 
         else -> {

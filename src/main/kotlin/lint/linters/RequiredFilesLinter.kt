@@ -1,6 +1,8 @@
 package lint.linters
 
 import model.*
+import model.manifest.ITask
+import model.manifest.Manifest
 import reader.IReader
 
 open class RequiredFilesLinter(private val reader: IReader) : ILinter {

@@ -1,6 +1,7 @@
 package model
 
 import com.google.common.truth.Truth.assertThat
+import model.manifest.Manifest
 import org.junit.Assert.fail
 import org.junit.Test
 

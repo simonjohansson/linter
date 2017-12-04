@@ -13,7 +13,7 @@ fun printResult(result: Result) {
     if (result.hasErrors()) {
         for (error in result.errors) {
             println("\t${error.type}\t\t${error.message}")
-            println("\t\t\t\t${error.documentation}")
+            println("\tHow to fix:\t\t${error.documentation}")
             println()
         }
     } else {
@@ -37,8 +37,7 @@ fun lint(path: String): List<Result> {
     return Linter(
             requiredFilesLinter = RequiredFilesLinter(reader),
             requiredFieldsLinter = RequiredFieldsLinter(),
-            testLinter = TestLinter(reader),
-            buildLinter = BuildLinter(reader),
+            runLinter = RunLinter(reader),
             repoLinter = RepoLinter(),
             parser = Parser(reader)).lint()
 }

@@ -1,7 +1,7 @@
 package lint.linters
 
-import model.ITask
-import model.Manifest
+import model.manifest.ITask
+import model.manifest.Manifest
 import model.Result
 
 interface ILinter {
