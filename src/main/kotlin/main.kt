@@ -4,6 +4,7 @@ import model.Result
 import model.hasErrors
 import parser.Parser
 import reader.Reader
+import secrets.Secrets
 import us.jimschubert.kopper.typed.StringArgument
 import us.jimschubert.kopper.typed.TypedArgumentParser
 import kotlin.system.exitProcess
@@ -38,7 +39,7 @@ fun lint(path: String): List<Result> {
             requiredFilesLinter = RequiredFilesLinter(reader),
             requiredFieldsLinter = RequiredFieldsLinter(),
             runLinter = RunLinter(reader),
-            deployLinter = DeployLinter(reader),
+            deployLinter = DeployLinter(reader, Secrets()),
             repoLinter = RepoLinter(),
             parser = Parser(reader)).lint()
 }

@@ -1,5 +1,7 @@
 package model.manifest
 
+import com.sun.tools.doclint.Env
+
 interface ITask {
     fun name() = when(this) {
         is Run -> this.command
@@ -12,7 +14,7 @@ interface ITask {
 }
 
 data class Run(val command: String = "", val image: String = ""): ITask
-data class Deploy(val env: String = "", val manifest: String = "manifest.yml"): ITask
+data class Deploy(val env: String = "", val manifest: String = "manifest.yml", val vars: Map<String, String> = emptyMap()): ITask
 
 data class Manifest(
         val org: String = "",

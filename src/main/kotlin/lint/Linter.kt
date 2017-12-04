@@ -20,9 +20,9 @@ class Linter(
             result.add(requiredFieldsLinter.lint(manifest))
             result.add(repoLinter.lint(manifest))
             for (task in manifest.tasks) {
-                when(task) {
-                    is Run ->  result.add(runLinter.lint(task))
-                    is Deploy -> result.add(deployLinter.lint(task))
+                when (task) {
+                    is Run -> result.add(runLinter.lint(task))
+                    is Deploy -> result.add(deployLinter.lint(task, manifest))
                 }
             }
         }

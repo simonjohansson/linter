@@ -2,9 +2,9 @@ package lint
 
 import com.google.common.truth.Truth.assertThat
 import lint.linters.*
-import model.manifest.Manifest
 import model.Result
 import model.manifest.Deploy
+import model.manifest.Manifest
 import model.manifest.Run
 import org.junit.Before
 import org.junit.Test
@@ -79,7 +79,7 @@ class LinterTest {
     }
 
     @Test
-    fun `When manifest has two test task and one build task`() {
+    fun `When manifest has many tasks`() {
         val manifest = Manifest(tasks = listOf(
                 Run("test1"),
                 Run("build"),
@@ -101,7 +101,7 @@ class LinterTest {
         given(runLinter.lint(manifest.tasks[0])).willReturn(resultd)
         given(runLinter.lint(manifest.tasks[1])).willReturn(resulte)
         given(runLinter.lint(manifest.tasks[2])).willReturn(resultf)
-        given(deployLinter.lint(manifest.tasks[3])).willReturn(resultg)
+        given(deployLinter.lint(manifest.tasks[3], manifest)).willReturn(resultg)
 
         linter.lint()
 

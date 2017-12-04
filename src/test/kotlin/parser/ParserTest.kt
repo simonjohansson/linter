@@ -44,6 +44,9 @@ class ParserTest {
                               command: build.sh
                             - task: deploy
                               env: live
+                              vars:
+                                name: value
+                                secret: ((kehe))
                         """)
         val manifest = parser.parseManifest()
         assertThat(manifest.isPresent).isTrue()
@@ -54,7 +57,13 @@ class ParserTest {
                         tasks = listOf(
                                 Run(command = "test.sh"),
                                 Run(command = "build.sh"),
-                                Deploy(env = "live")
+                                Deploy(
+                                        env = "live",
+                                        vars = mapOf(
+                                                "name" to "value",
+                                                "secret" to "((kehe))"
+                                        )
+                                )
                         )
                 )
         )

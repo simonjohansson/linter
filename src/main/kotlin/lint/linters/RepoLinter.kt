@@ -1,11 +1,15 @@
 package lint.linters
 
 import model.Error
+import model.Result
 import model.manifest.ITask
 import model.manifest.Manifest
-import model.Result
 
 open class RepoLinter : ILinter {
+    override fun lint(task: ITask, manifest: Manifest): Result {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun name() = "Repo"
 
     override fun lint(): Result {

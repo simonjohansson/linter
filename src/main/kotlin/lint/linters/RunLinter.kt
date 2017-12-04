@@ -8,6 +8,10 @@ import model.manifest.Run
 import reader.IReader
 
 open class RunLinter(private val reader: IReader) : ILinter {
+    override fun lint(task: ITask, manifest: Manifest): Result {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun name() = "Run"
 
     override fun lint(): Result {

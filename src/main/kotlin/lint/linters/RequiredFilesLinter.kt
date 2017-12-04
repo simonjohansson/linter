@@ -1,11 +1,16 @@
 package lint.linters
 
-import model.*
+import model.Error
+import model.Result
 import model.manifest.ITask
 import model.manifest.Manifest
 import reader.IReader
 
 open class RequiredFilesLinter(private val reader: IReader) : ILinter {
+    override fun lint(task: ITask, manifest: Manifest): Result {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun name() = "Required Files"
 
     override fun lint(): Result {

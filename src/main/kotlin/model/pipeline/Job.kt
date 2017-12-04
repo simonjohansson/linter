@@ -8,4 +8,4 @@ data class Job(
         val name: String = "",
         val serial: Boolean = true,
         val plan: List<PlanItem> = emptyList()
-)
+)/**/
