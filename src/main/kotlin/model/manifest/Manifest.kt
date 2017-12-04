@@ -11,7 +11,7 @@ interface ITask {
     }
 }
 
-data class Run(val command: String = "", val image: String = ""): ITask
+data class Run(val command: String = "", val image: String = "", val vars: Map<String, String> = emptyMap()): ITask
 data class Deploy(val env: String = "", val manifest: String = "manifest.yml", val vars: Map<String, String> = emptyMap()): ITask
 
 data class Manifest(

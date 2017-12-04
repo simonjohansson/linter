@@ -7,6 +7,7 @@ data class Input(val name: String = "")
 data class Config(
         val platform: String = "linux",
         val image_resource: ImageResource = ImageResource(),
+        val params: Map<String, String> = emptyMap(),
         val run: Run = Run(),
         val inputs: List<Input> = listOf(Input())
 )
