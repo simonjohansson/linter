@@ -7,9 +7,7 @@ import model.manifest.Manifest
 import reader.IReader
 
 open class RequiredFilesLinter(private val reader: IReader) : ILinter {
-    override fun lint(task: ITask, manifest: Manifest): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint(task: ITask, manifest: Manifest) = throw DontUseMe()
 
     override fun name() = "Required Files"
 
@@ -26,12 +24,8 @@ open class RequiredFilesLinter(private val reader: IReader) : ILinter {
         return result
     }
 
-    override fun lint(manifest: Manifest): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint(manifest: Manifest) = throw DontUseMe()
 
-    override fun lint(task: ITask): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint(task: ITask) = throw DontUseMe()
 
 }

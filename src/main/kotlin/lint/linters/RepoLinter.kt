@@ -12,9 +12,7 @@ open class RepoLinter : ILinter {
 
     override fun name() = "Repo"
 
-    override fun lint(): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint() = throw DontUseMe()
 
     override fun lint(manifest: Manifest): Result {
         try {
@@ -33,7 +31,5 @@ open class RepoLinter : ILinter {
         return Result(linter = this.name())
     }
 
-    override fun lint(task: ITask): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint(task: ITask) = throw DontUseMe()
 }

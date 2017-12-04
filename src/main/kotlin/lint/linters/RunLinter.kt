@@ -8,19 +8,13 @@ import model.manifest.Run
 import reader.IReader
 
 open class RunLinter(private val reader: IReader) : ILinter {
-    override fun lint(task: ITask, manifest: Manifest): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint(task: ITask, manifest: Manifest) = throw DontUseMe()
 
     override fun name() = "Run"
 
-    override fun lint(): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint() = throw DontUseMe()
 
-    override fun lint(manifest: Manifest): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint(manifest: Manifest) = throw DontUseMe()
 
     override fun lint(task: ITask): Result {
         val runTask = task as Run

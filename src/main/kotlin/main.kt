@@ -33,27 +33,27 @@ fun printResults(results: List<Result>) {
     }
 }
 
-fun lint(path: String): List<Result> {
-    val reader = Reader(path)
+fun lint(arguments: Args): List<Result> {
+    val reader = Reader(arguments.path)
     return Linter(
             requiredFilesLinter = RequiredFilesLinter(reader),
             requiredFieldsLinter = RequiredFieldsLinter(),
             runLinter = RunLinter(reader),
-            deployLinter = DeployLinter(reader, Secrets()),
+            deployLinter = DeployLinter(reader, Secrets(vaultToken = arguments.vaultToken)),
             repoLinter = RepoLinter(),
             parser = Parser(reader)).lint()
 }
 
-fun runLint(path: String) = printResults(lint(path))
+fun runLint(arguments: Args) = printResults(lint(arguments))
 
-fun runBuild(path: String) {
-    val lint = lint(path)
+fun runBuild(arguments: Args) {
+    val lint = lint(arguments)
     if (lint.hasErrors()) {
         println("Cannot build, as there are lint errors...")
         printResults(lint)
     }
 
-    Parser(Reader(path)).parseManifest().map { manifest ->
+    Parser(Reader(arguments.path)).parseManifest().map { manifest ->
         println(ConcoursePipelineBuilder().build(manifest))
     }
 }
@@ -71,8 +71,8 @@ fun main(args: Array<String>) {
     }
 
     when (arguments.type) {
-        "lint" -> runLint(arguments.path)
-        "build" -> runBuild(arguments.path)
+        "lint" -> runLint(arguments)
+        "build" -> runBuild(arguments)
         else -> {
             println("I have no idea what ${arguments.type} is")
             println("Please run with -t lint|build")
@@ -83,4 +83,5 @@ fun main(args: Array<String>) {
 class Args(args: Array<String>) : TypedArgumentParser(args) {
     val path by StringArgument(self, "p", default = "", longOption = listOf("path"))
     val type by StringArgument(self, shortOption = "t", description = "'lint' or 'build'")
+    val vaultToken by StringArgument(self, shortOption = "v", description = "Vault token")
 }

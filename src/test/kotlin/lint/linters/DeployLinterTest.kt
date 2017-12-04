@@ -100,7 +100,7 @@ class DeployLinterTest {
         ))
         val manifest = Manifest(org = "yolo", repo = "https://github.sadlfksdf.com/org/repo-name.git")
         given(reader.fileExists(path)).willReturn(true)
-        given(secrets.haveCredentials()).willReturn(true)
+        given(secrets.haveToken()).willReturn(true)
         given(secrets.exists(manifest.org, manifest.getRepoName(), secret_value_found)).willReturn(true)
         given(secrets.exists(manifest.org, manifest.getRepoName(), secret_value_not_found)).willReturn(false)
 
@@ -118,12 +118,12 @@ class DeployLinterTest {
         ))
         val manifest = Manifest(org = "yolo", repo = "https://github.sadlfksdf.com/org/repo-name.git")
         given(reader.fileExists(path)).willReturn(true)
-        given(secrets.haveCredentials()).willReturn(false)
+        given(secrets.haveToken()).willReturn(false)
 
         val result = subject.lint(deploy, manifest)
 
         assertThat(result.errors).hasSize(1)
-        assertErrorMessage(result, "You have secrets in your env map, cannot lint unless you pass credentials with " +
-                "`-u username -p password` to linter!")
+        assertErrorMessage(result, "You have secrets in your env map, cannot lint unless you pass a vault token with " +
+                "`-v vaultToken` to linter!")
     }
 }

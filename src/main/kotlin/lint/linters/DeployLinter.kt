@@ -10,19 +10,13 @@ import secrets.ISecrets
 
 
 open class DeployLinter(val reader: IReader, val secrets: ISecrets) : ILinter {
-    override fun lint(task: ITask): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint(task: ITask) = throw DontUseMe()
 
     override fun name() = "Deploy"
 
-    override fun lint(): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint() = throw DontUseMe()
 
-    override fun lint(manifest: Manifest): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint(manifest: Manifest) = throw DontUseMe()
 
     private fun envLinter(deploy: Deploy): List<Error> {
         val errors: ArrayList<Error> = arrayListOf()
@@ -65,16 +59,16 @@ open class DeployLinter(val reader: IReader, val secrets: ISecrets) : ILinter {
 
         val errors: ArrayList<Error> = arrayListOf()
         if (secretValues.isNotEmpty()) {
-            if (!secrets.haveCredentials()) {
+            if (!secrets.haveToken()) {
                 errors.add(Error(
-                        message = "You have secrets in your env map, cannot lint unless you pass credentials with " +
-                                "`-u username -p password` to linter!",
+                        message = "You have secrets in your env map, cannot lint unless you pass a vault token with " +
+                                "`-v vaultToken` to linter!",
                         type = Error.Type.LINTER_ERROR,
                         documentation = "https://github.com/simonjohansson/linter/wiki/Deploy#linter_error"))
             }
 
             errors.addAll(secretValues
-                    .filter { secrets.haveCredentials() }
+                    .filter { secrets.haveToken() }
                     .filter { !secrets.exists(manifest.org, manifest.getRepoName(), it) }
                     .map {
                         val key = it.replace("((", "").replace("))", "")

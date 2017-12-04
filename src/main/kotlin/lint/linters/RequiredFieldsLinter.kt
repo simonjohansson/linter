@@ -6,17 +6,11 @@ import model.manifest.ITask
 import model.manifest.Manifest
 
 open class RequiredFieldsLinter() : ILinter {
-    override fun lint(task: ITask, manifest: Manifest): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint(task: ITask, manifest: Manifest) = throw DontUseMe()
 
-    override fun lint(): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint() = throw DontUseMe()
 
-    override fun lint(task: ITask): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun lint(task: ITask) = throw DontUseMe()
 
     override fun name() = "Required Fields"
 
