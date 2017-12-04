@@ -2,6 +2,7 @@ package lint.linters
 
 import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
+import junit.framework.Assert.fail
 import model.manifest.Deploy
 import model.manifest.Manifest
 import org.junit.Before
@@ -125,5 +126,11 @@ class DeployLinterTest {
         assertThat(result.errors).hasSize(1)
         assertErrorMessage(result, "You have secrets in your env map, cannot lint unless you pass a vault token with " +
                 "`-v vaultToken` to linter!")
+    }
+
+    @Test
+    fun `Write test`() {
+        // secret keys MUST be ((top-level.sub-key)) not ((top-level)) as its a dict
+        fail("Write test.")
     }
 }
