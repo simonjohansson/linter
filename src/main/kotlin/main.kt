@@ -38,6 +38,7 @@ fun lint(path: String): List<Result> {
             requiredFilesLinter = RequiredFilesLinter(reader),
             requiredFieldsLinter = RequiredFieldsLinter(),
             runLinter = RunLinter(reader),
+            deployLinter = DeployLinter(reader),
             repoLinter = RepoLinter(),
             parser = Parser(reader)).lint()
 }

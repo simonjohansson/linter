@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import lint.linters.*
 import model.manifest.Manifest
 import model.Result
+import model.manifest.Deploy
 import model.manifest.Run
 import org.junit.Before
 import org.junit.Test
@@ -20,6 +21,8 @@ class LinterTest {
     lateinit var requiredFieldsLinter: RequiredFieldsLinter
     lateinit var repoLinter: RepoLinter
     lateinit var runLinter: RunLinter
+    lateinit var deployLinter: DeployLinter
+
     lateinit var parser: IParser
     lateinit var linter: Linter
 
@@ -29,12 +32,14 @@ class LinterTest {
         requiredFieldsLinter = mock(RequiredFieldsLinter::class.java)
         repoLinter = mock(RepoLinter::class.java)
         runLinter = mock(RunLinter::class.java)
+        deployLinter = mock(DeployLinter::class.java)
         parser = mock(IParser::class.java)
 
         linter = Linter(
                 requiredFilesLinter,
                 requiredFieldsLinter,
                 runLinter,
+                deployLinter,
                 repoLinter,
                 parser
         )
@@ -50,6 +55,7 @@ class LinterTest {
         Mockito.verifyZeroInteractions(requiredFieldsLinter)
         Mockito.verifyZeroInteractions(repoLinter)
         Mockito.verifyZeroInteractions(runLinter)
+        Mockito.verifyZeroInteractions(deployLinter)
     }
 
     @Test
@@ -69,17 +75,24 @@ class LinterTest {
         linter.lint()
 
         assertThat(linter.lint()).isEqualTo(listOf(resulta, resultb, resultc, resultd))
+        Mockito.verifyZeroInteractions(deployLinter)
     }
 
     @Test
     fun `When manifest has two test task and one build task`() {
-        val manifest = Manifest(tasks = listOf(Run("test1"), Run("build"), Run("test2")))
+        val manifest = Manifest(tasks = listOf(
+                Run("test1"),
+                Run("build"),
+                Run("test2"),
+                Deploy("asdf")
+        ))
         val resulta = Result(linter = "files")
         val resultb = Result(linter = "required")
         val resultc = Result(linter = "repo")
         val resultd = Result(linter = "test1")
         val resulte = Result(linter = "build")
         val resultf = Result(linter = "test2")
+        val resultg = Result(linter = "deploy")
 
         given(parser.parseManifest()).willReturn(Optional.of(manifest))
         given(requiredFilesLinter.lint()).willReturn(resulta)
@@ -88,10 +101,10 @@ class LinterTest {
         given(runLinter.lint(manifest.tasks[0])).willReturn(resultd)
         given(runLinter.lint(manifest.tasks[1])).willReturn(resulte)
         given(runLinter.lint(manifest.tasks[2])).willReturn(resultf)
+        given(deployLinter.lint(manifest.tasks[3])).willReturn(resultg)
 
         linter.lint()
 
-        assertThat(linter.lint()).isEqualTo(listOf(resulta, resultb, resultc, resultd, resulte, resultf))
-
+        assertThat(linter.lint()).isEqualTo(listOf(resulta, resultb, resultc, resultd, resulte, resultf, resultg))
     }
 }

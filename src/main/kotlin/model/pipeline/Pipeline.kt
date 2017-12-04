@@ -11,7 +11,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class Pipeline(
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        val resources: List<Resource> = listOf(Resource()),
+        val resources: List<Resource> = emptyList(),
         val jobs: List<Job> = listOf(Job())
 )
 

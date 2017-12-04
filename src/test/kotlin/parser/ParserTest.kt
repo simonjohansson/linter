@@ -43,7 +43,7 @@ class ParserTest {
                             - task: run
                               command: build.sh
                             - task: deploy
-                              target: live
+                              env: live
                         """)
         val manifest = parser.parseManifest()
         assertThat(manifest.isPresent).isTrue()
@@ -54,7 +54,7 @@ class ParserTest {
                         tasks = listOf(
                                 Run(command = "test.sh"),
                                 Run(command = "build.sh"),
-                                Deploy(target = "live")
+                                Deploy(env = "live")
                         )
                 )
         )

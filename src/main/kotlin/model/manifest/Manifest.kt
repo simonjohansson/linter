@@ -1,9 +1,18 @@
 package model.manifest
 
-interface ITask
+interface ITask {
+    fun name() = when(this) {
+        is Run -> this.command
+        is Deploy -> "deploy-${this.env}"
+
+        else -> {
+            throw RuntimeException()
+        }
+    }
+}
 
 data class Run(val command: String = "", val image: String = ""): ITask
-data class Deploy(val target: String = ""): ITask
+data class Deploy(val env: String = "", val manifest: String = "manifest.yml"): ITask
 
 data class Manifest(
         val org: String = "",

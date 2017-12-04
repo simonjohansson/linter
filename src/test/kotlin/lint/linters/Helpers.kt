@@ -6,4 +6,4 @@ import model.Error
 import model.Result
 
 fun assertErrorMessage(result: Result, error_message: String) =
-        assertThat(result.errors.filter { it.message == error_message }).hasSize(1)
+        assertThat(result.errors.map { it.message }).contains(error_message)
