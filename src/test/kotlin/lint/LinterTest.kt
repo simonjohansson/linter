@@ -70,7 +70,7 @@ class LinterTest {
         given(requiredFilesLinter.lint()).willReturn(resulta)
         given(requiredFieldsLinter.lint(manifest)).willReturn(resultb)
         given(repoLinter.lint(manifest)).willReturn(resultc)
-        given(runLinter.lint(manifest.tasks[0])).willReturn(resultd)
+        given(runLinter.lint(manifest.tasks[0], manifest)).willReturn(resultd)
 
         linter.lint()
 
@@ -98,9 +98,9 @@ class LinterTest {
         given(requiredFilesLinter.lint()).willReturn(resulta)
         given(requiredFieldsLinter.lint(manifest)).willReturn(resultb)
         given(repoLinter.lint(manifest)).willReturn(resultc)
-        given(runLinter.lint(manifest.tasks[0])).willReturn(resultd)
-        given(runLinter.lint(manifest.tasks[1])).willReturn(resulte)
-        given(runLinter.lint(manifest.tasks[2])).willReturn(resultf)
+        given(runLinter.lint(manifest.tasks[0], manifest)).willReturn(resultd)
+        given(runLinter.lint(manifest.tasks[1], manifest)).willReturn(resulte)
+        given(runLinter.lint(manifest.tasks[2], manifest)).willReturn(resultf)
         given(deployLinter.lint(manifest.tasks[3], manifest)).willReturn(resultg)
 
         linter.lint()

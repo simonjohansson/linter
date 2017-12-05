@@ -91,8 +91,8 @@ class DeployLinterTest {
     @Test
     fun `Should fail if a secret is not found lowercase`() {
         val path = "manifest.yml"
-        val secret_value_found = "((super-secret))"
-        val secret_value_not_found = "((super-secret-not-found))"
+        val secret_value_found = "((secret.found))"
+        val secret_value_not_found = "((secret.not_found))"
         val deploy = Deploy(env = "live", manifest = path, vars = mapOf(
                 "VAR1" to "value1",
                 "VAR2" to secret_value_found,
@@ -108,14 +108,14 @@ class DeployLinterTest {
         val result = subject.lint(deploy, manifest)
 
         assertThat(result.errors).hasSize(1)
-        assertErrorMessage(result, "Cannot resolve '/concourse/${manifest.org}/${manifest.getRepoName()}/super-secret-not-found'")
+        assertErrorMessage(result, "Cannot resolve 'not_found' in '/concourse/${manifest.org}/${manifest.getRepoName()}/secret'")
     }
 
     @Test
     fun `Should fail if there are secrets but no credentials supplied`() {
         val path = "manifest.yml"
         val deploy = Deploy(env = "live", manifest = path, vars = mapOf(
-                "VAR2" to "((secret-value))"
+                "VAR2" to "((secret.value))"
         ))
         val manifest = Manifest(org = "yolo", repo = "https://github.sadlfksdf.com/org/repo-name.git")
         given(reader.fileExists(path)).willReturn(true)
@@ -130,7 +130,19 @@ class DeployLinterTest {
 
     @Test
     fun `Write test`() {
-        // secret keys MUST be ((top-level.sub-key)) not ((top-level)) as its a dict
-        fail("Write test.")
+        val path = "manifest.yml"
+        val deploy = Deploy(env = "live", manifest = path, vars = mapOf(
+                "VAR2" to "((secret-value))"
+        ))
+        val manifest = Manifest(org = "yolo", repo = "https://github.sadlfksdf.com/org/repo-name.git")
+
+        given(reader.fileExists(path)).willReturn(true)
+        given(secrets.haveToken()).willReturn(true)
+
+        val result = subject.lint(deploy, manifest)
+
+        assertThat(result.errors).hasSize(1)
+        assertErrorMessage(result, "Your secret keys must be in the format of '((map-name.key-name))' got '((secret-value))'")
+
     }
 }

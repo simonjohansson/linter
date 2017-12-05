@@ -35,11 +35,12 @@ fun printResults(results: List<Result>) {
 
 fun lint(arguments: Args): List<Result> {
     val reader = Reader(arguments.path)
+    val secrets = Secrets(vaultToken = arguments.vaultToken)
     return Linter(
             requiredFilesLinter = RequiredFilesLinter(reader),
             requiredFieldsLinter = RequiredFieldsLinter(),
-            runLinter = RunLinter(reader),
-            deployLinter = DeployLinter(reader, Secrets(vaultToken = arguments.vaultToken)),
+            runLinter = RunLinter(reader, secrets),
+            deployLinter = DeployLinter(reader, secrets),
             repoLinter = RepoLinter(),
             parser = Parser(reader)).lint()
 }

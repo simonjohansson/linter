@@ -1,14 +1,18 @@
 package lint.linters
 
+import lint.linters.helpers.environmentSecretsLinter
+import lint.linters.helpers.environmentVarsKeysLinter
 import model.Error
 import model.Result
 import model.manifest.ITask
 import model.manifest.Manifest
 import model.manifest.Run
 import reader.IReader
+import secrets.ISecrets
+import secrets.Secrets
 
-open class RunLinter(private val reader: IReader) : ILinter {
-    override fun lint(task: ITask, manifest: Manifest) = throw DontUseMe()
+open class RunLinter(private val reader: IReader, private val secrets: ISecrets) : ILinter {
+    override fun lint(task: ITask) = throw DontUseMe()
 
     override fun name() = "Run"
 
@@ -16,11 +20,16 @@ open class RunLinter(private val reader: IReader) : ILinter {
 
     override fun lint(manifest: Manifest) = throw DontUseMe()
 
-    override fun lint(task: ITask): Result {
+    override fun lint(task: ITask, manifest: Manifest): Result {
         val runTask = task as Run
         return Result(
                 linter = this.name(),
-                errors = commandLinter(runTask) + imageLinter(runTask)
+                errors = commandLinter(runTask) +
+                        imageLinter(runTask) +
+                        environmentVarsKeysLinter(task) +
+                        environmentSecretsLinter(task, manifest, secrets)
+
+
         )
     }
 
@@ -66,6 +75,8 @@ open class RunLinter(private val reader: IReader) : ILinter {
                     ))
                 }
             }
+
+
         }
         return errors
     }

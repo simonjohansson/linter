@@ -21,7 +21,7 @@ class Linter(
             result.add(repoLinter.lint(manifest))
             for (task in manifest.tasks) {
                 when (task) {
-                    is Run -> result.add(runLinter.lint(task))
+                    is Run -> result.add(runLinter.lint(task, manifest))
                     is Deploy -> result.add(deployLinter.lint(task, manifest))
                 }
             }
