@@ -173,6 +173,7 @@ class ConcoursePipelineBuilderTest {
                 tasks = listOf(
                         Run("./test.sh", "busybox"),
                         Deploy(
+                                manifest = "ci/manifest.yml",
                                 api = "api",
                                 username = "username",
                                 password = "password",
@@ -223,7 +224,9 @@ class ConcoursePipelineBuilderTest {
                         |    passed:
                         |    - ./test.sh
                         |  - put: ${(manifest.tasks[1] as Deploy).name()}
-                        |    params: {}
+                        |    params:
+                        |      path: my-cool-repo
+                        |      manifest: my-cool-repo/ci/manifest.yml
                         |
                         """.trimMargin()
 
@@ -313,7 +316,9 @@ class ConcoursePipelineBuilderTest {
                         |    passed:
                         |    - ./test.sh
                         |  - put: ${(manifest.tasks[1] as Deploy).name()}
-                        |    params: {}
+                        |    params:
+                        |      path: my-cool-repo
+                        |      manifest: my-cool-repo/manifest.yml
                         |- name: ${(manifest.tasks[2] as Run).name()}
                         |  serial: true
                         |  plan:
@@ -342,6 +347,8 @@ class ConcoursePipelineBuilderTest {
                         |    - ${(manifest.tasks[2] as Run).name()}
                         |  - put: ${(manifest.tasks[3] as Deploy).name()}
                         |    params:
+                        |      path: ${manifest.getRepoName()}
+                        |      manifest: ${manifest.getRepoName()}/manifest.yml
                         |      environment_variables:
                         |        SIMON: Johansson
                         |

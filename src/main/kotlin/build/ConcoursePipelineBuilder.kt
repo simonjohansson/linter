@@ -75,7 +75,7 @@ class ConcoursePipelineBuilder : IBuild {
                             name = currentTask.name(),
                             plan = listOf(
                                     getPlan(lastTask, repoName),
-                                    deployPlan(currentTask)
+                                    deployPlan(currentTask, repoName)
                             )
                     )
                 }
@@ -86,10 +86,14 @@ class ConcoursePipelineBuilder : IBuild {
         }
     }
 
-    private fun deployPlan(task: Deploy): Put {
+    private fun deployPlan(task: Deploy, repoName: String): Put {
         return Put(
                 put = task.name(),
-                params = Params(task.vars)
+                params = Params(
+                        path = repoName,
+                        manifest = "$repoName/${task.manifest}",
+                        environment_variables = task.vars
+                )
         )
     }
 
