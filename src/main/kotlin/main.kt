@@ -41,7 +41,7 @@ fun lint(arguments: Args): List<Result> {
             requiredFieldsLinter = RequiredFieldsLinter(),
             runLinter = RunLinter(reader, secrets),
             deployLinter = DeployLinter(reader, secrets),
-            repoLinter = RepoLinter(),
+            repoLinter = RepoLinter(secrets),
             parser = Parser(reader)).lint()
 }
 

@@ -4,6 +4,7 @@ import model.Error
 import model.Result
 import model.manifest.ITask
 import model.manifest.Manifest
+import model.manifest.Repo
 
 open class RequiredFieldsLinter() : ILinter {
     override fun lint(task: ITask, manifest: Manifest) = throw DontUseMe()
@@ -33,7 +34,7 @@ open class RequiredFieldsLinter() : ILinter {
             ))
         }
 
-        if (manifest.repo.isEmpty()) {
+        if (manifest.repo == Repo()) {
             errors.add(model.Error(
                     message = "Required top level field 'repo' missing",
                     type = Error.Type.MISSING_FIELD,

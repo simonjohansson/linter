@@ -2,6 +2,7 @@ package lint.linters
 
 import com.google.common.truth.Truth.assertThat
 import model.manifest.Manifest
+import model.manifest.Repo
 import model.manifest.Run
 import org.junit.Test
 
@@ -45,7 +46,7 @@ class RequiredFieldsLinterTest {
     fun `no errors if all is ok`() {
         val manifest = Manifest(
                 org = "yolo",
-                repo = "git@...",
+                repo = Repo("git@..."),
                 tasks = listOf(Run()))
 
         val linter = RequiredFieldsLinter()

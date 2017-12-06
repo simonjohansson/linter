@@ -5,6 +5,7 @@ import com.google.common.truth.Truth.assertThat
 import junit.framework.Assert.fail
 import model.manifest.Deploy
 import model.manifest.Manifest
+import model.manifest.Repo
 import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito.given
@@ -99,7 +100,7 @@ class DeployLinterTest {
                 "VAR3" to "value4",
                 "VAR4" to secret_value_not_found
         ))
-        val manifest = Manifest(org = "yolo", repo = "https://github.sadlfksdf.com/org/repo-name.git")
+        val manifest = Manifest(org = "yolo", repo = Repo("https://github.sadlfksdf.com/org/repo-name.git"))
         given(reader.fileExists(path)).willReturn(true)
         given(secrets.haveToken()).willReturn(true)
         given(secrets.exists(manifest.org, manifest.getRepoName(), secret_value_found)).willReturn(true)
@@ -117,7 +118,7 @@ class DeployLinterTest {
         val deploy = Deploy(env = "live", manifest = path, vars = mapOf(
                 "VAR2" to "((secret.value))"
         ))
-        val manifest = Manifest(org = "yolo", repo = "https://github.sadlfksdf.com/org/repo-name.git")
+        val manifest = Manifest(org = "yolo", repo = Repo("https://github.sadlfksdf.com/org/repo-name.git"))
         given(reader.fileExists(path)).willReturn(true)
         given(secrets.haveToken()).willReturn(false)
 
@@ -134,7 +135,7 @@ class DeployLinterTest {
         val deploy = Deploy(env = "live", manifest = path, vars = mapOf(
                 "VAR2" to "((secret-value))"
         ))
-        val manifest = Manifest(org = "yolo", repo = "https://github.sadlfksdf.com/org/repo-name.git")
+        val manifest = Manifest(org = "yolo", repo = Repo("https://github.sadlfksdf.com/org/repo-name.git"))
 
         given(reader.fileExists(path)).willReturn(true)
         given(secrets.haveToken()).willReturn(true)

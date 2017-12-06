@@ -3,10 +3,7 @@ package parser
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.google.gson.Gson
-import model.manifest.Deploy
-import model.manifest.ITask
-import model.manifest.Manifest
-import model.manifest.Run
+import model.manifest.*
 import reader.IReader
 import java.util.*
 import kotlin.collections.HashMap
@@ -32,14 +29,14 @@ class Parser(val reader: IReader) : IParser {
 
     private fun mapToManifest(data: HashMap<*, *>): Manifest {
         var org: String = ""
-        var repo: String = ""
+        var repo: Repo = Repo()
 
         if("org" in data) {
             org = data["org"] as String
         }
 
         if("repo" in data) {
-            repo = data["repo"] as String
+            repo = parseRepo(data["repo"] as HashMap<String, String>)
         }
 
         var tasks: List<ITask> = emptyList()
@@ -65,5 +62,11 @@ class Parser(val reader: IReader) : IParser {
         val gson = Gson()
         val json = gson.toJson(task)
         return gson.fromJson(json, type) as ITask
+    }
+
+    private fun parseRepo(repo: HashMap<String, String>): Repo {
+        val gson = Gson()
+        val json = gson.toJson(repo)
+        return gson.fromJson(json, Repo::class.java)
     }
 }

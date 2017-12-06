@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import junit.framework.Assert.fail
 import model.manifest.Deploy
 import model.manifest.Manifest
+import model.manifest.Repo
 import model.manifest.Run
 import org.junit.Before
 import org.junit.Test
@@ -36,7 +37,11 @@ class ParserTest {
         given(reader.fileExists(path)).willReturn(true)
         given(reader.readFile(path)).willReturn("""
                         org: yolo
-                        repo: asd
+                        repo:
+                          uri: asd
+                          private_key: |
+                            I AM
+                            SO PRIVATE
                         tasks:
                             - task: run
                               command: test.sh
@@ -53,7 +58,7 @@ class ParserTest {
         assertThat(manifest.get()).isEqualTo(
                 Manifest(
                         org = "yolo",
-                        repo = "asd",
+                        repo = Repo("asd", "I AM\nSO PRIVATE\n"),
                         tasks = listOf(
                                 Run(command = "test.sh"),
                                 Run(command = "build.sh"),

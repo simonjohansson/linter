@@ -1,11 +1,15 @@
 package model.pipeline
 
+import com.fasterxml.jackson.annotation.JacksonAnnotation
+import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonInclude
 
 interface ISource
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class GitSource(
-        val uri: String = ""
+        val uri: String = "",
+        val private_key: String = ""
 ) : ISource
 
 data class CFSource(

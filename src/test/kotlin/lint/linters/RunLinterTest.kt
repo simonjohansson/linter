@@ -4,6 +4,7 @@ import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import model.Result
 import model.manifest.Manifest
+import model.manifest.Repo
 import model.manifest.Run
 import org.junit.Before
 import org.junit.Test
@@ -149,7 +150,7 @@ class RunLinterTest {
                 "VAR3" to "((secret.not_found))"
         ))
 
-        val manifest = Manifest(org = "yolo", repo = "https://github.sadlfksdf.com/org/repo-name.git")
+        val manifest = Manifest(org = "yolo", repo = Repo("https://github.sadlfksdf.com/org/repo-name.git"))
 
         BDDMockito.given(reader.fileExists("test.sh")).willReturn(true)
         BDDMockito.given(reader.fileExecutable("test.sh")).willReturn(true)

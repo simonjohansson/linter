@@ -57,19 +57,21 @@ fun environmentSecretsLinter(task: ITask, manifest: Manifest, secrets: ISecrets)
 
         errors.addAll(secretValues
                 .filter { secrets.haveToken() }
-                .filter { it !in  invalidValues}
+                .filter { it !in invalidValues }
                 .filter { !secrets.exists(manifest.org, manifest.getRepoName(), it) }
-                .map {
-                    val key = it.replace("((", "").replace("))", "")
-
-                    Error(
-                            message = "Cannot resolve '${key.split(".").last()}' in '/concourse/${manifest.org}/${manifest.getRepoName()}/${key.split(".").first()}'",
-                            type = Error.Type.BAD_VALUE,
-                            documentation = "https://github.com/simonjohansson/linter/wiki/Vault#bad_value-cannot-resolve"
-                    )
-                }
+                .map { secretError(it, manifest) }
         )
     }
 
     return errors
 }
+
+fun secretError(secret: String, manifest: Manifest): Error {
+    val key = secret.replace("((", "").replace("))", "")
+    return Error(
+            message = "Cannot resolve '${key.split(".").last()}' in '/concourse/${manifest.org}/${manifest.getRepoName()}/${key.split(".").first()}'",
+            type = Error.Type.BAD_VALUE,
+            documentation = "https://github.com/simonjohansson/linter/wiki/Vault#bad_value-cannot-resolve"
+    )
+}
+
