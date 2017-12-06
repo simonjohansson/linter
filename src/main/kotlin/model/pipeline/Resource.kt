@@ -17,7 +17,9 @@ data class CFSource(
         val username: String = "",
         val password: String = "",
         val organization: String = "",
-        val space: String = ""
+        val space: String = "",
+        val skip_cert_check: Boolean = false
+
 ) : ISource
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)

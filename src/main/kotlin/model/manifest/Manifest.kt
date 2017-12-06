@@ -19,6 +19,7 @@ data class Deploy(
         val organization: String = "",
         val space: String = "",
         val manifest: String = "manifest.yml",
+        val skip_cert_check: Boolean = false,
         val vars: Map<String, String> = emptyMap()
 ): ITask
 
