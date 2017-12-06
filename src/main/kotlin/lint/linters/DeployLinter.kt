@@ -58,14 +58,6 @@ open class DeployLinter(val reader: IReader, val secrets: ISecrets) : ILinter {
             ))
         }
 
-
-        if (!reader.fileExists(deploy.manifest)) {
-            errors.add(model.Error(
-                    message = "Cannot find Cloud Foundry manifest at path '${deploy.manifest}'",
-                    type = Error.Type.MISSING_FILE,
-                    documentation = "https://github.com/simonjohansson/linter/wiki/Deploy#missing_file"
-            ))
-        }
         return errors
 
     }
@@ -101,7 +93,6 @@ open class DeployLinter(val reader: IReader, val secrets: ISecrets) : ILinter {
         val errors = requiredFieldsLinter(deploy) +
                 passwordMustBeSecretLinter(deploy) +
                 passwordMustExistLinter(deploy, manifest) +
-                manifestLinter(deploy) +
                 manifestLinter(deploy) +
                 environmentVarsKeysLinter(deploy) +
                 environmentSecretsLinter(deploy, manifest, secrets)
