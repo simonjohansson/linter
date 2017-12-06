@@ -8,7 +8,7 @@ import com.google.common.truth.Truth.assertThat
 import junit.framework.Assert.fail
 import org.junit.Before
 import org.junit.Test
-import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.*
 import org.mockito.Mockito.mock
 
 class SecretsTest {
@@ -44,13 +44,18 @@ class SecretsTest {
         val org = "org"
         val repoName = "repoName"
         val secret_key = "((secret.key))"
-        val vaultPath = "/concourse/$org/$repoName/secret"
+        val vaultRepoPath = "/springernature/$org/$repoName/secret"
+        val vaultOrgPath = "/springernature/$org/secret"
 
         val logical = mock(Logical::class.java)
         given(vault.logical()).willReturn(logical)
-        given(logical.read(vaultPath)).willThrow(VaultException::class.java)
+        given(logical.read(vaultRepoPath)).willThrow(VaultException::class.java)
+        given(logical.read(vaultOrgPath)).willThrow(VaultException::class.java)
 
         assertThat(subject.exists(org, repoName, secret_key)).isFalse()
+
+        verify(logical).read(vaultRepoPath)
+        verify(logical).read(vaultOrgPath)
     }
 
     @Test
@@ -58,16 +63,24 @@ class SecretsTest {
         val org = "org"
         val repoName = "repoName"
         val secret_key = "((secret.key))"
-        val vaultPath = "/concourse/$org/$repoName/secret"
+        val vaultRepoPath = "/springernature/$org/$repoName/secret"
+        val vaultOrgPath = "/springernature/$org/secret"
 
         val logical = mock(Logical::class.java)
         given(vault.logical()).willReturn(logical)
 
-        val logicalResponse = mock(LogicalResponse::class.java)
-        given(logical.read(vaultPath)).willReturn(logicalResponse)
-        given(logicalResponse.data).willReturn(mapOf("yolo" to "kolo"))
+        val logicalResponseRepo = mock(LogicalResponse::class.java)
+        given(logical.read(vaultRepoPath)).willReturn(logicalResponseRepo)
+        given(logicalResponseRepo.data).willReturn(mapOf("yolo" to "kehe"))
+
+        val logicalResponseOrg = mock(LogicalResponse::class.java)
+        given(logical.read(vaultOrgPath)).willReturn(logicalResponseOrg)
+        given(logicalResponseOrg.data).willReturn(mapOf("420" to "value"))
 
         assertThat(subject.exists(org, repoName, secret_key)).isFalse()
+
+        verify(logical).read(vaultRepoPath)
+        verify(logical).read(vaultOrgPath)
     }
 
     @Test
@@ -75,15 +88,42 @@ class SecretsTest {
         val org = "org"
         val repoName = "repoName"
         val secret_key = "((secret.key))"
-        val vaultPath = "/concourse/$org/$repoName/secret"
+        val vaultRepoPath = "/springernature/$org/$repoName/secret"
+        val vaultOrgPath = "/springernature/$org/secret"
 
         val logical = mock(Logical::class.java)
         given(vault.logical()).willReturn(logical)
 
         val logicalResponse = mock(LogicalResponse::class.java)
-        given(logical.read(vaultPath)).willReturn(logicalResponse)
+        given(logical.read(vaultRepoPath)).willReturn(logicalResponse)
         given(logicalResponse.data).willReturn(mapOf("key" to "I exist!"))
 
         assertThat(subject.exists(org, repoName, secret_key)).isTrue()
+        verify(logical).read(vaultRepoPath)
+        verify(logical, times(0)).read(vaultOrgPath)
+    }
+
+    @Test
+    fun `Should find secret in org`() {
+        val org = "myOrg"
+        val repoName = "repoName"
+        val secret_key = "((secret.key))"
+        val vaultRepoPath = "/springernature/$org/$repoName/secret"
+        val vaultOrgPath = "/springernature/$org/secret"
+
+        val logical = mock(Logical::class.java)
+        given(vault.logical()).willReturn(logical)
+
+        val logicalResponseRepo = mock(LogicalResponse::class.java)
+        given(logical.read(vaultRepoPath)).willReturn(logicalResponseRepo)
+        given(logicalResponseRepo.data).willReturn(mapOf())
+
+        val logicalResponseOrg = mock(LogicalResponse::class.java)
+        given(logical.read(vaultOrgPath)).willReturn(logicalResponseOrg)
+        given(logicalResponseOrg.data).willReturn(mapOf("key" to "value"))
+
+        assertThat(subject.exists(org, repoName, secret_key)).isTrue()
+        verify(logical).read(vaultRepoPath)
+        verify(logical).read(vaultOrgPath)
     }
 }

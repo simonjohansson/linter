@@ -155,6 +155,7 @@ class RunLinterTest {
         BDDMockito.given(reader.fileExists("test.sh")).willReturn(true)
         BDDMockito.given(reader.fileExecutable("test.sh")).willReturn(true)
         BDDMockito.given(secrets.haveToken()).willReturn(true)
+        BDDMockito.given(secrets.prefix()).willReturn("springernature")
         BDDMockito.given(secrets.exists(manifest.org, manifest.getRepoName(), run.vars.get("VAR2")!!)).willReturn(true)
         BDDMockito.given(secrets.exists(manifest.org, manifest.getRepoName(), run.vars.get("VAR3")!!)).willReturn(false)
 
@@ -162,7 +163,7 @@ class RunLinterTest {
 
         assertThat(result.errors).hasSize(2)
         assertErrorMessage(result, "Your secret keys must be in the format of '((map-name.key-name))' got '((secret))'")
-        assertErrorMessage(result, "Cannot resolve 'not_found' in '/concourse/yolo/repo-name/secret'")
+        assertErrorMessage(result, "Cannot resolve 'not_found' in '/springernature/yolo/repo-name/secret' or '/springernature/yolo/secret'")
 
     }
 }

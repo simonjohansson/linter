@@ -7,43 +7,62 @@ import com.bettercloud.vault.VaultException
 interface ISecrets {
     fun exists(org: String, repoName: String, secret_key: String): Boolean
     fun haveToken(): Boolean
+    fun prefix(): String
 
 }
 
 class Secrets(private val vaultUrl: String = "https://10.244.18.2:8200",
+              private val sslVerify: Boolean = true,
+              private val vaultPrefix: String = "springernature",
               private val vaultToken: String,
               private val vault: Vault? = null) : ISecrets {
-    override fun haveToken() = vaultToken.isNotEmpty()
+    private val client: Vault
 
-    private fun getVaultClient(): Vault {
+    override fun haveToken() = vaultToken.isNotEmpty()
+    override fun prefix() = vaultPrefix
+
+    init {
+        if (vault != null) {
+            this.client = vault
+        } else {
+            val config = VaultConfig()
+                    .address(vaultUrl)
+                    .token(vaultToken)
+                    .openTimeout(5)
+                    .readTimeout(30)
+                    .sslVerify(sslVerify)
+                    .build()
+            this.client = Vault(config)
+        }
+    }
+
+    override fun exists(org: String, repoName: String, secret_key: String): Boolean {
         if (!haveToken()) {
             throw RuntimeException("You must create object with real vault token!")
         }
 
-        if (vault != null) {
-            return vault
-        }
-
-        val config = VaultConfig()
-                .address(vaultUrl)
-                .token(vaultToken)
-                .openTimeout(5)
-                .readTimeout(30)
-                .sslVerify(false)
-                .build()
-
-        return Vault(config)
+        return keyInRepo(org, repoName, secret_key) || keyInOrg(org, secret_key)
     }
 
-    override fun exists(org: String, repoName: String, secret_key: String): Boolean {
-        val client = getVaultClient()
+    private fun keyInRepo(org: String, repoName: String, secret_key: String): Boolean {
+        val (map, value) = secret_key.replace("(", "").replace(")", "").split(".")
+        val path = "/$vaultPrefix/$org/$repoName/$map"
+        return valueInPath(value, path)
+    }
+
+    private fun keyInOrg(org: String, secret_key: String): Boolean {
+        val (map, value) = secret_key.replace("(", "").replace(")", "").split(".")
+        val path = "/$vaultPrefix/$org/$map"
+        return valueInPath(value, path)
+    }
+
+    private fun valueInPath(value: String, path: String): Boolean {
         return try {
-            val (map, value) = secret_key.replace("(", "").replace(")", "").split(".")
-            val path = "/concourse/$org/$repoName/$map"
             val read = client.logical().read(path).data
-            (value in read)
+            return (value in read)
         } catch (e: VaultException) {
             false
         }
+
     }
 }

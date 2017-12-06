@@ -59,17 +59,21 @@ fun environmentSecretsLinter(task: ITask, manifest: Manifest, secrets: ISecrets)
                 .filter { secrets.haveToken() }
                 .filter { it !in invalidValues }
                 .filter { !secrets.exists(manifest.org, manifest.getRepoName(), it) }
-                .map { secretError(it, manifest) }
+                .map { secretError(it, manifest, secrets) }
         )
     }
 
     return errors
 }
 
-fun secretError(secret: String, manifest: Manifest): Error {
+fun secretError(secret: String, manifest: Manifest, secrets: ISecrets): Error {
     val key = secret.replace("((", "").replace("))", "")
+    val (map, value) = key.split(".")
+
+
+    val message = "Cannot resolve '$value' in '/${secrets.prefix()}/${manifest.org}/${manifest.getRepoName()}/$map' or '/${secrets.prefix()}/${manifest.org}/$map'"
     return Error(
-            message = "Cannot resolve '${key.split(".").last()}' in '/concourse/${manifest.org}/${manifest.getRepoName()}/${key.split(".").first()}'",
+            message = message,
             type = Error.Type.BAD_VALUE,
             documentation = "https://github.com/simonjohansson/linter/wiki/Vault#bad_value-cannot-resolve"
     )

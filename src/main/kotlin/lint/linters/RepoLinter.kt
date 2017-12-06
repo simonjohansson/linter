@@ -55,7 +55,7 @@ open class RepoLinter(val secrets: ISecrets) : ILinter {
         } else {
             if (manifest.repo.private_key.isNotEmpty()) {
                 if (!secrets.exists(manifest.org, manifest.getRepoName(), manifest.repo.private_key)) {
-                    errors.add(secretError(manifest.repo.private_key, manifest))
+                    errors.add(secretError(manifest.repo.private_key, manifest, secrets))
                 }
             }
         }

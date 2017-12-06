@@ -105,11 +105,12 @@ class DeployLinterTest {
         given(secrets.haveToken()).willReturn(true)
         given(secrets.exists(manifest.org, manifest.getRepoName(), secret_value_found)).willReturn(true)
         given(secrets.exists(manifest.org, manifest.getRepoName(), secret_value_not_found)).willReturn(false)
+        given(secrets.prefix()).willReturn("springernature")
 
         val result = subject.lint(deploy, manifest)
 
         assertThat(result.errors).hasSize(1)
-        assertErrorMessage(result, "Cannot resolve 'not_found' in '/concourse/${manifest.org}/${manifest.getRepoName()}/secret'")
+        assertErrorMessage(result, "Cannot resolve 'not_found' in '/springernature/${manifest.org}/${manifest.getRepoName()}/secret' or '/springernature/${manifest.org}/secret'")
     }
 
     @Test

@@ -76,11 +76,12 @@ class RepoLinterTest {
         )
         given(secrets.exists(manifest.org, manifest.getRepoName(), manifest.repo.private_key))
                 .willReturn(false)
+        given(secrets.prefix()).willReturn("springernature")
 
         val result = subject.lint(manifest)
 
         assertThat(result.errors).hasSize(1)
-        assertErrorMessage(result, "Cannot resolve 'private' in '/concourse/yolo/test-repo/deploy-key'")
+        assertErrorMessage(result, "Cannot resolve 'private' in '/springernature/yolo/test-repo/deploy-key' or '/springernature/yolo/deploy-key'")
     }
 
     @Test
