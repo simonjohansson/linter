@@ -45,7 +45,9 @@ class ConcoursePipelineBuilder : IBuild {
                                 username = deploy.username,
                                 password = deploy.password,
                                 organization = deploy.organization,
-                                space = deploy.space
+                                space = deploy.space,
+                                skip_cert_check = deploy.skip_cert_check
+
                         ))
                     }
 

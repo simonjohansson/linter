@@ -286,7 +286,7 @@ class ConcoursePipelineBuilderTest {
                         |    password: ${(manifest.tasks[3] as Deploy).password}
                         |    organization: ${(manifest.tasks[3] as Deploy).organization}
                         |    space: ${(manifest.tasks[3] as Deploy).space}
-                        |    skip_cert_check: falsee
+                        |    skip_cert_check: false
                         |jobs:
                         |- name: ${(manifest.tasks[0] as Run).name()}
                         |  serial: true
