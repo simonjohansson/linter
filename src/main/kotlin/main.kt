@@ -35,7 +35,7 @@ fun printResults(results: List<Result>) {
 
 fun lint(arguments: Args): List<Result> {
     val reader = Reader(arguments.path)
-    val secrets = Secrets(vaultToken = arguments.vaultToken)
+    val secrets = Secrets(vaultToken = arguments.vaultToken, sslVerify = false)
     return Linter(
             requiredFilesLinter = RequiredFilesLinter(reader),
             requiredFieldsLinter = RequiredFieldsLinter(),
