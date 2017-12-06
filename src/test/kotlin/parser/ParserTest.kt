@@ -63,7 +63,6 @@ class ParserTest {
                                 Run(command = "test.sh"),
                                 Run(command = "build.sh"),
                                 Deploy(
-                                        env = "live",
                                         vars = mapOf(
                                                 "name" to "value",
                                                 "secret" to "((kehe))"
