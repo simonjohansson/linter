@@ -11,7 +11,11 @@ interface ITask {
     }
 }
 
-data class Run(val command: String = "", val image: String = "", val vars: Map<String, String> = emptyMap()): ITask
+data class Run(
+        val command: String = "",
+        val image: String = "",
+        val vars: Map<String, String> = emptyMap()): ITask
+
 data class Deploy(
         val api: String = "",
         val username: String = "",

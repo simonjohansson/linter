@@ -118,13 +118,25 @@ class ConcoursePipelineBuilder : IBuild {
                 passed = listOf(lastTask.name()))
     }
 
+    private fun dockerImage(image: String): Pair<String, String> {
+        if (image.contains(":")) {
+            val split = image.split(":")
+            return (split[0] to split[1])
+        }
+
+        return (image to "latest")
+    }
+
     private fun taskPlan(task: ITask, repoName: String): Task {
         val run = (task as Run)
+        val (image, tag) = dockerImage(run.image)
         return Task(
                 task = run.command,
                 config = Config(
                         image_resource = ImageResource(
-                                source = Source(run.image)
+                                source = Source(
+                                        repository = image,
+                                        tag = tag)
                         ),
                         params = run.vars,
                         run = model.pipeline.plan.Run(

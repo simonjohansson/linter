@@ -1,6 +1,9 @@
 package model.pipeline.plan
 
-data class Source(val repository: String = "")
+data class Source(
+        val repository: String = "",
+        val tag: String = ""
+)
 data class ImageResource(val type: String = "docker-image", val source: Source = Source())
 data class Run(val path: String = "", val dir: String = "")
 data class Input(val name: String = "")

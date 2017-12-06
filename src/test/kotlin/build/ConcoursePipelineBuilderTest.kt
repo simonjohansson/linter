@@ -64,6 +64,7 @@ class ConcoursePipelineBuilderTest {
                         |        type: docker-image
                         |        source:
                         |          repository: ${(manifest.tasks[0] as Run).image}
+                        |          tag: latest
                         |      run:
                         |        path: ./${(manifest.tasks[0] as Run).command}
                         |        dir: ${manifest.getRepoName()}
@@ -110,6 +111,7 @@ class ConcoursePipelineBuilderTest {
                         |        type: docker-image
                         |        source:
                         |          repository: ${(manifest.tasks[0] as Run).image}
+                        |          tag: latest
                         |      run:
                         |        path: ./${(manifest.tasks[0] as Run).command}
                         |        dir: ${manifest.getRepoName()}
@@ -129,6 +131,7 @@ class ConcoursePipelineBuilderTest {
                         |        type: docker-image
                         |        source:
                         |          repository: ${(manifest.tasks[1] as Run).image}
+                        |          tag: latest
                         |      run:
                         |        path: ./${(manifest.tasks[1] as Run).command}
                         |        dir: ${manifest.getRepoName()}
@@ -148,6 +151,7 @@ class ConcoursePipelineBuilderTest {
                         |        type: docker-image
                         |        source:
                         |          repository: kehe
+                        |          tag: latest
                         |      params:
                         |        KEY: value
                         |      run:
@@ -171,7 +175,7 @@ class ConcoursePipelineBuilderTest {
                 repo = Repo(uri),
                 org = "myOrg",
                 tasks = listOf(
-                        Run("./test.sh", "busybox"),
+                        Run("./test.sh", "busybox:yolo"),
                         Deploy(
                                 manifest = "ci/manifest.yml",
                                 api = "api",
@@ -210,7 +214,8 @@ class ConcoursePipelineBuilderTest {
                         |      image_resource:
                         |        type: docker-image
                         |        source:
-                        |          repository: ${(manifest.tasks[0] as Run).image}
+                        |          repository: busybox
+                        |          tag: yolo
                         |      run:
                         |        path: ${(manifest.tasks[0] as Run).command}
                         |        dir: ${manifest.getRepoName()}
@@ -303,6 +308,7 @@ class ConcoursePipelineBuilderTest {
                         |        type: docker-image
                         |        source:
                         |          repository: ${(manifest.tasks[0] as Run).image}
+                        |          tag: latest
                         |      run:
                         |        path: ${(manifest.tasks[0] as Run).command}
                         |        dir: ${manifest.getRepoName()}
@@ -333,6 +339,7 @@ class ConcoursePipelineBuilderTest {
                         |        type: docker-image
                         |        source:
                         |          repository: ${(manifest.tasks[0] as Run).image}
+                        |          tag: latest
                         |      run:
                         |        path: ${(manifest.tasks[2] as Run).command}
                         |        dir: ${manifest.getRepoName()}
