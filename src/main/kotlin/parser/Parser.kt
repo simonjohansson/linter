@@ -52,6 +52,7 @@ class Parser(val reader: IReader) : IParser {
     private fun mapTaskToRealTask(task: HashMap<String, *>): ITask = when (task["task"]) {
         "run" -> toITask(task, Run::class.java)
         "deploy" -> toITask(task, Deploy::class.java)
+        "docker" -> toITask(task, Docker::class.java)
 
         else -> {
             throw NotImplementedError("I don't know how to deal with task '${task["task"]}'")

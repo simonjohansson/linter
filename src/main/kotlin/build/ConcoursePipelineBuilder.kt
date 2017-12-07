@@ -1,8 +1,6 @@
 package build
 
-import model.manifest.Deploy
-import model.manifest.ITask
-import model.manifest.Manifest
+import model.manifest.*
 import model.manifest.Run
 import model.pipeline.*
 import model.pipeline.plan.*
@@ -51,8 +49,24 @@ class ConcoursePipelineBuilder : IBuild {
                         ))
                     }
 
+
+    private fun dockerResource(manifest: Manifest) =
+            manifest.tasks.filter { it is Docker }
+                    .map {
+                        val docker = it as Docker
+                        Resource(docker.name(), "docker-image", DockerSource(
+                                email = it.email,
+                                username = it.username,
+                                password = it.password,
+                                repository = it.repository
+                        ))
+                    }
+
     private fun resources(manifest: Manifest): List<Resource> {
-        return emptyList<Resource>() + gitResource(manifest) + deployResources(manifest)
+        return emptyList<Resource>() +
+                gitResource(manifest) +
+                deployResources(manifest) +
+                dockerResource(manifest)
     }
 
     private fun jobs(tasks: List<ITask>, repoName: String): List<Job> {
@@ -79,6 +93,15 @@ class ConcoursePipelineBuilder : IBuild {
                             )
                     )
                 }
+                is Docker -> {
+                    Job(
+                            name = currentTask.name(),
+                            plan = listOf(
+                                    getPlan(lastTask, repoName),
+                                    dockerPlan(currentTask, repoName)
+                            )
+                    )
+                }
                 else -> {
                     throw Exception()
                 }
@@ -86,10 +109,19 @@ class ConcoursePipelineBuilder : IBuild {
         }
     }
 
+    private fun dockerPlan(task: Docker, repoName: String): Put {
+        return Put(
+                put = task.name(),
+                params = DockerParams(
+                        build = repoName
+                )
+        )
+    }
+
     private fun deployPlan(task: Deploy, repoName: String): Put {
         return Put(
                 put = task.name(),
-                params = Params(
+                params = CFParams(
                         path = repoName,
                         manifest = "$repoName/${task.manifest}",
                         environment_variables = task.vars

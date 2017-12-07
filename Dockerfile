@@ -4,7 +4,7 @@ RUN mkdir /opt/src
 ADD . /opt/src
 
 WORKDIR /opt/src
-RUN ./gradlew clean build
+RUN ./gradlew clean build -xtest
 
 RUN mkdir /opt/linter
 RUN cp build/libs/linter-1.0-SNAPSHOT.jar /opt/linter

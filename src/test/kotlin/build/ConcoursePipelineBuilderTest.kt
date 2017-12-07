@@ -1,10 +1,7 @@
 package build
 
 import com.google.common.truth.Truth.assertThat
-import model.manifest.Deploy
-import model.manifest.Manifest
-import model.manifest.Repo
-import model.manifest.Run
+import model.manifest.*
 import org.junit.Before
 import org.junit.Test
 
@@ -239,7 +236,7 @@ class ConcoursePipelineBuilderTest {
     }
 
     @Test
-    fun `should render two deploy jobs properly`() {
+    fun `should render two deploy jobs and a docker push properly`() {
         val repoName = "my-cool-repo"
         val uri = "https://github.com/org/$repoName.git"
 
@@ -260,6 +257,14 @@ class ConcoursePipelineBuilderTest {
                 vars = mapOf("SIMON" to "Johansson")
 
         )
+
+        val docker = Docker(
+                email = "asd",
+                username = "asd",
+                password = "asd",
+                repository = "asd/asd"
+        )
+
         val manifest = Manifest(
                 repo = Repo(uri),
                 org = "myOrg",
@@ -267,7 +272,9 @@ class ConcoursePipelineBuilderTest {
                         Run("./test.sh", "busybox"),
                         deploy1,
                         Run("./integration-tests.sh", "busybox"),
-                        deploy2
+                        deploy2,
+                        docker
+
                 )
         )
 
@@ -295,6 +302,13 @@ class ConcoursePipelineBuilderTest {
                         |    organization: ${(manifest.tasks[3] as Deploy).organization}
                         |    space: ${(manifest.tasks[3] as Deploy).space}
                         |    skip_cert_check: false
+                        |- name: docker-push
+                        |  type: docker-image
+                        |  source:
+                        |    email: asd
+                        |    username: asd
+                        |    password: asd
+                        |    repository: asd/asd
                         |jobs:
                         |- name: ${(manifest.tasks[0] as Run).name()}
                         |  serial: true
@@ -358,7 +372,17 @@ class ConcoursePipelineBuilderTest {
                         |      manifest: ${manifest.getRepoName()}/manifest.yml
                         |      environment_variables:
                         |        SIMON: Johansson
-                        |
+                        |- name: docker-push
+                        |  serial: true
+                        |  plan:
+                        |  - get: my-cool-repo
+                        |    trigger: true
+                        |    passed:
+                        |    - deploy-organization2-space2
+                        |  - put: docker-push
+                        |    params:
+                        |      build: ${manifest.getRepoName()}
+
                         """.trimMargin()
 
         assertThat(subject.build(manifest)).isEqualTo(wanted)

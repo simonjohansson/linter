@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import lint.linters.*
 import model.Result
 import model.manifest.Deploy
+import model.manifest.Docker
 import model.manifest.Manifest
 import model.manifest.Run
 import org.junit.Before
@@ -22,6 +23,7 @@ class LinterTest {
     lateinit var repoLinter: RepoLinter
     lateinit var runLinter: RunLinter
     lateinit var deployLinter: DeployLinter
+    lateinit var dockerLinter: DockerLinter
 
     lateinit var parser: IParser
     lateinit var linter: Linter
@@ -33,6 +35,7 @@ class LinterTest {
         repoLinter = mock(RepoLinter::class.java)
         runLinter = mock(RunLinter::class.java)
         deployLinter = mock(DeployLinter::class.java)
+        dockerLinter = mock(DockerLinter::class.java)
         parser = mock(IParser::class.java)
 
         linter = Linter(
@@ -41,6 +44,7 @@ class LinterTest {
                 runLinter,
                 deployLinter,
                 repoLinter,
+                dockerLinter,
                 parser
         )
     }
@@ -84,8 +88,10 @@ class LinterTest {
                 Run("test1"),
                 Run("build"),
                 Run("test2"),
-                Deploy("asdf")
+                Deploy("deploy"),
+                Docker("docker")
         ))
+
         val resulta = Result(linter = "files")
         val resultb = Result(linter = "required")
         val resultc = Result(linter = "repo")
@@ -93,6 +99,7 @@ class LinterTest {
         val resulte = Result(linter = "build")
         val resultf = Result(linter = "test2")
         val resultg = Result(linter = "deploy")
+        val resulth = Result(linter = "docker")
 
         given(parser.parseManifest()).willReturn(Optional.of(manifest))
         given(requiredFilesLinter.lint()).willReturn(resulta)
@@ -102,9 +109,10 @@ class LinterTest {
         given(runLinter.lint(manifest.tasks[1], manifest)).willReturn(resulte)
         given(runLinter.lint(manifest.tasks[2], manifest)).willReturn(resultf)
         given(deployLinter.lint(manifest.tasks[3], manifest)).willReturn(resultg)
+        given(dockerLinter.lint(manifest.tasks[4])).willReturn(resulth)
 
         linter.lint()
 
-        assertThat(linter.lint()).isEqualTo(listOf(resulta, resultb, resultc, resultd, resulte, resultf, resultg))
+        assertThat(linter.lint()).isEqualTo(listOf(resulta, resultb, resultc, resultd, resulte, resultf, resultg, resulth))
     }
 }

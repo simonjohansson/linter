@@ -2,6 +2,7 @@ package lint.linters
 
 import model.Result
 import model.manifest.Deploy
+import model.manifest.Docker
 import model.manifest.Run
 import parser.IParser
 
@@ -11,6 +12,7 @@ class Linter(
         private val runLinter: RunLinter,
         private val deployLinter: DeployLinter,
         private val repoLinter: RepoLinter,
+        private val dockerLinter: DockerLinter,
         private val parser: IParser) {
 
     fun lint(): ArrayList<Result> {
@@ -23,6 +25,7 @@ class Linter(
                 when (task) {
                     is Run -> result.add(runLinter.lint(task, manifest))
                     is Deploy -> result.add(deployLinter.lint(task, manifest))
+                    is Docker -> result.add(dockerLinter.lint(task))
                 }
             }
         }

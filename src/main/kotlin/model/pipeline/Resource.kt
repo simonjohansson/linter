@@ -22,6 +22,13 @@ data class CFSource(
 
 ) : ISource
 
+data class DockerSource(
+        val email: String = "",
+        val username: String = "",
+        val password: String = "",
+        val repository: String = ""
+) : ISource
+
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class Resource(
         val name: String = "",

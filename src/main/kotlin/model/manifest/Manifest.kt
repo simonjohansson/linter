@@ -4,6 +4,7 @@ interface ITask {
     fun name() = when(this) {
         is Run -> this.command
         is Deploy -> "deploy-${this.organization}-${this.space}"
+        is Docker -> "docker-push"
 
         else -> {
             throw RuntimeException()
@@ -25,6 +26,13 @@ data class Deploy(
         val manifest: String = "manifest.yml",
         val skip_cert_check: Boolean = false,
         val vars: Map<String, String> = emptyMap()
+): ITask
+
+data class Docker(
+        val email: String = "",
+        val username: String = "",
+        val password: String = "",
+        val repository: String = ""
 ): ITask
 
 data class Repo(val uri: String = "", val private_key: String = "")

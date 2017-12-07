@@ -2,10 +2,7 @@ package parser
 
 import com.google.common.truth.Truth.assertThat
 import junit.framework.Assert.fail
-import model.manifest.Deploy
-import model.manifest.Manifest
-import model.manifest.Repo
-import model.manifest.Run
+import model.manifest.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito.given
@@ -52,6 +49,11 @@ class ParserTest {
                               vars:
                                 name: value
                                 secret: ((kehe))
+                            - task: docker
+                              email: asd
+                              username: asd
+                              password: asd
+                              repository: asd/asd
                         """)
         val manifest = parser.parseManifest()
         assertThat(manifest.isPresent).isTrue()
@@ -67,6 +69,12 @@ class ParserTest {
                                                 "name" to "value",
                                                 "secret" to "((kehe))"
                                         )
+                                ),
+                                Docker(
+                                        email = "asd",
+                                        username = "asd",
+                                        password = "asd",
+                                        repository = "asd/asd"
                                 )
                         )
                 )
