@@ -1,6 +1,5 @@
 package lint.linters
 
-import lint.linters.helpers.secretError
 import model.Error
 import model.Result
 import model.manifest.ITask
@@ -52,12 +51,6 @@ open class RepoLinter(val secrets: ISecrets) : ILinter {
                             documentation = "https://github.com/simonjohansson/linter/wiki/Repo#missing_field"
                     )
             )
-        } else {
-            if (manifest.repo.private_key.isNotEmpty()) {
-                if (!secrets.exists(manifest.org, manifest.getRepoName(), manifest.repo.private_key)) {
-                    errors.add(secretError(manifest.repo.private_key, manifest, secrets))
-                }
-            }
         }
 
         return Result(

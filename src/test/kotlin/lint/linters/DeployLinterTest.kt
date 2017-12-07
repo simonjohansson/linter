@@ -106,62 +106,6 @@ class DeployLinterTest {
     }
 
     @Test
-    fun `Should fail if a secret is not found lowercase`() {
-        val path = "manifest.yml"
-        val secret_value_found = "((secret.found))"
-        val secret_value_not_found = "((secret.not_found))"
-        val deploy = Deploy( manifest = path, vars = mapOf(
-                "VAR1" to "value1",
-                "VAR2" to secret_value_found,
-                "VAR3" to "value4",
-                "VAR4" to secret_value_not_found
-        ))
-        val manifest = Manifest(org = "yolo", repo = Repo("https://github.sadlfksdf.com/org/repo-name.git"))
-        given(reader.fileExists(path)).willReturn(true)
-        given(secrets.haveToken()).willReturn(true)
-        given(secrets.exists(manifest.org, manifest.getRepoName(), secret_value_found)).willReturn(true)
-        given(secrets.exists(manifest.org, manifest.getRepoName(), secret_value_not_found)).willReturn(false)
-        given(secrets.prefix()).willReturn("springernature")
-
-        val result = subject.lint(deploy, manifest)
-
-        assertErrorMessage(result, "Cannot resolve 'not_found' in '/springernature/${manifest.org}/${manifest.getRepoName()}/secret' or '/springernature/${manifest.org}/secret'")
-    }
-
-    @Test
-    fun `Should fail if there are secrets but no credentials supplied`() {
-        val path = "manifest.yml"
-        val deploy = Deploy( manifest = path, vars = mapOf(
-                "VAR2" to "((secret.value))"
-        ))
-        val manifest = Manifest(org = "yolo", repo = Repo("https://github.sadlfksdf.com/org/repo-name.git"))
-        given(reader.fileExists(path)).willReturn(true)
-        given(secrets.haveToken()).willReturn(false)
-
-        val result = subject.lint(deploy, manifest)
-
-        assertErrorMessage(result, "You have secrets in your env map, cannot lint unless you pass a vault token with " +
-                "`-v vaultToken` to linter!")
-    }
-
-    @Test
-    fun `Fails if secret is not in the right format`() {
-        val path = "manifest.yml"
-        val deploy = Deploy( manifest = path, vars = mapOf(
-                "VAR2" to "((secret-value))"
-        ))
-        val manifest = Manifest(org = "yolo", repo = Repo("https://github.sadlfksdf.com/org/repo-name.git"))
-
-        given(reader.fileExists(path)).willReturn(true)
-        given(secrets.haveToken()).willReturn(true)
-
-        val result = subject.lint(deploy, manifest)
-
-        assertErrorMessage(result, "Your secret keys must be in the format of '((map-name.key-name))' got '((secret-value))'")
-
-    }
-
-    @Test
     fun `Fails if password is not a secret`() {
         val deploy = Deploy(
                 password = "ImASecret"
@@ -170,26 +114,5 @@ class DeployLinterTest {
         val result = subject.lint(deploy, Manifest())
         assertErrorMessage(result, "'password' must be a secret")
     }
-
-    @Test
-    fun `Fails if password is not in vault`() {
-        val deploy = Deploy(
-                api = "api",
-                username = "username",
-                password = "((super.secret))",
-                organization = "organization",
-                space = "space"
-        )
-        val manifest = Manifest(
-                org = "myOrg",
-                repo = Repo(uri = "https://github.com/simonjohansson/linter.git")
-        )
-
-        given(secrets.prefix()).willReturn("springernature")
-
-        val result = subject.lint(deploy, manifest)
-        assertErrorMessage(result, "Cannot resolve 'secret' in '/springernature/myOrg/linter/super' or '/springernature/myOrg/super'")
-    }
-
 
 }

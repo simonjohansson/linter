@@ -1,8 +1,6 @@
 package lint.linters
 
-import lint.linters.helpers.environmentSecretsLinter
 import lint.linters.helpers.environmentVarsKeysLinter
-import lint.linters.helpers.secretError
 import model.Error
 import model.Result
 import model.manifest.Deploy
@@ -76,26 +74,12 @@ open class DeployLinter(val reader: IReader, val secrets: ISecrets) : ILinter {
         return errors
     }
 
-    fun passwordMustExistLinter(deploy: Deploy, manifest: Manifest): List<Error> {
-        val errors: ArrayList<Error> = arrayListOf()
-        if (deploy.password.isNotEmpty()
-                and deploy.password.startsWith("((")
-                and deploy.password.endsWith("))")) {
-            if (!secrets.exists(manifest.org, manifest.getRepoName(), deploy.password)) {
-                errors.add(secretError(deploy.password, manifest, secrets))
-            }
-        }
-        return errors
-    }
-
     override fun lint(task: ITask, manifest: Manifest): Result {
         val deploy = task as Deploy
         val errors = requiredFieldsLinter(deploy) +
                 passwordMustBeSecretLinter(deploy) +
-                passwordMustExistLinter(deploy, manifest) +
                 manifestLinter(deploy) +
-                environmentVarsKeysLinter(deploy) +
-                environmentSecretsLinter(deploy, manifest, secrets)
+                environmentVarsKeysLinter(deploy)
         return Result(linter = this.name(), errors = errors)
     }
 }

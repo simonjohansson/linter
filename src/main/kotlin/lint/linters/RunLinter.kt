@@ -1,6 +1,5 @@
 package lint.linters
 
-import lint.linters.helpers.environmentSecretsLinter
 import lint.linters.helpers.environmentVarsKeysLinter
 import model.Error
 import model.Result
@@ -9,7 +8,6 @@ import model.manifest.Manifest
 import model.manifest.Run
 import reader.IReader
 import secrets.ISecrets
-import secrets.Secrets
 
 open class RunLinter(private val reader: IReader, private val secrets: ISecrets) : ILinter {
     override fun lint(task: ITask) = throw DontUseMe()
@@ -26,10 +24,7 @@ open class RunLinter(private val reader: IReader, private val secrets: ISecrets)
                 linter = this.name(),
                 errors = commandLinter(runTask) +
                         imageLinter(runTask) +
-                        environmentVarsKeysLinter(task) +
-                        environmentSecretsLinter(task, manifest, secrets)
-
-
+                        environmentVarsKeysLinter(task)
         )
     }
 

@@ -67,24 +67,6 @@ class RepoLinterTest {
     }
 
     @Test
-    fun `it fails if private key is not in Vault`() {
-        val manifest = Manifest(
-                org = "yolo",
-                repo = Repo(
-                        "git@github.com:simonjohansson/test-repo.git",
-                        private_key = "((deploy-key.private))")
-        )
-        given(secrets.exists(manifest.org, manifest.getRepoName(), manifest.repo.private_key))
-                .willReturn(false)
-        given(secrets.prefix()).willReturn("springernature")
-
-        val result = subject.lint(manifest)
-
-        assertThat(result.errors).hasSize(1)
-        assertErrorMessage(result, "Cannot resolve 'private' in '/springernature/yolo/test-repo/deploy-key' or '/springernature/yolo/deploy-key'")
-    }
-
-    @Test
     fun `No errors if private key is in Vault`() {
         val manifest = Manifest(
                 org = "yolo",

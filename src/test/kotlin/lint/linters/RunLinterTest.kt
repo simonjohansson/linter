@@ -138,32 +138,4 @@ class RunLinterTest {
         assertErrorMessage(result, "Environment variable 'var4' must be upper case, its a env var yo!")
     }
 
-    @Test
-    fun `It checks that secrets are defined in vault`() {
-
-        val run = Run(
-                command = "test.sh",
-                image = "asdf",
-                vars = mapOf(
-                "VAR1" to "((secret))",
-                "VAR2" to "((secret.found))",
-                "VAR3" to "((secret.not_found))"
-        ))
-
-        val manifest = Manifest(org = "yolo", repo = Repo("https://github.sadlfksdf.com/org/repo-name.git"))
-
-        BDDMockito.given(reader.fileExists("test.sh")).willReturn(true)
-        BDDMockito.given(reader.fileExecutable("test.sh")).willReturn(true)
-        BDDMockito.given(secrets.haveToken()).willReturn(true)
-        BDDMockito.given(secrets.prefix()).willReturn("springernature")
-        BDDMockito.given(secrets.exists(manifest.org, manifest.getRepoName(), run.vars.get("VAR2")!!)).willReturn(true)
-        BDDMockito.given(secrets.exists(manifest.org, manifest.getRepoName(), run.vars.get("VAR3")!!)).willReturn(false)
-
-        val result = subject.lint(run, manifest)
-
-        assertThat(result.errors).hasSize(2)
-        assertErrorMessage(result, "Your secret keys must be in the format of '((map-name.key-name))' got '((secret))'")
-        assertErrorMessage(result, "Cannot resolve 'not_found' in '/springernature/yolo/repo-name/secret' or '/springernature/yolo/secret'")
-
-    }
 }

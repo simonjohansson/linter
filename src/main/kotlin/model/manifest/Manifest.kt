@@ -15,7 +15,7 @@ interface ITask {
 data class Run(
         val command: String = "",
         val image: String = "",
-        val vars: Map<String, String> = emptyMap()): ITask
+        val vars: Map<String, String> = emptyMap()): ITask, CI
 
 data class Deploy(
         val api: String = "",
@@ -26,22 +26,22 @@ data class Deploy(
         val manifest: String = "manifest.yml",
         val skip_cert_check: Boolean = false,
         val vars: Map<String, String> = emptyMap()
-): ITask
+): ITask, CI
 
 data class Docker(
         val email: String = "",
         val username: String = "",
         val password: String = "",
         val repository: String = ""
-): ITask
+): ITask, CI
 
-data class Repo(val uri: String = "", val private_key: String = "")
+data class Repo(val uri: String = "", val private_key: String = ""): CI
 
 data class Manifest(
         val org: String = "",
         val repo: Repo = Repo(),
         val tasks: List<ITask> = listOf()
-) {
+): CI {
     fun getRepoName(): String {
         if(this.repo.uri.isEmpty()) {
             throw RuntimeException()
@@ -52,3 +52,5 @@ data class Manifest(
         return find.groups.last()!!.value
     }
 }
+
+interface CI
