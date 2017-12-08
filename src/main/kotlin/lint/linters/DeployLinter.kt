@@ -9,7 +9,6 @@ import model.manifest.Manifest
 import reader.IReader
 
 open class DeployLinter(val reader: IReader) : ILinter {
-    override fun lint(task: ITask) = throw DontUseMe()
 
     override fun name() = "Deploy"
 
@@ -58,24 +57,9 @@ open class DeployLinter(val reader: IReader) : ILinter {
 
     }
 
-    fun passwordMustBeSecretLinter(deploy: Deploy): List<Error> {
-        val errors: ArrayList<Error> = arrayListOf()
-        if (deploy.password.isNotEmpty()) {
-            if (!deploy.password.startsWith("((") and !deploy.password.endsWith("))")) {
-                errors.add(model.Error(
-                        message = "'password' must be a secret",
-                        type = Error.Type.BAD_VALUE,
-                        documentation = "https://github.com/simonjohansson/linter/wiki/Deploy#bad_value-password-1"
-                ))
-            }
-        }
-        return errors
-    }
-
-    override fun lint(task: ITask, manifest: Manifest): Result {
+    override fun lint(task: ITask): Result {
         val deploy = task as Deploy
         val errors = requiredFieldsLinter(deploy) +
-                passwordMustBeSecretLinter(deploy) +
                 manifestLinter(deploy) +
                 environmentVarsKeysLinter(deploy)
         return Result(linter = this.name(), errors = errors)

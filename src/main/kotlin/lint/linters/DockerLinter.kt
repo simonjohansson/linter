@@ -21,7 +21,4 @@ open class DockerLinter(val reader: Reader) : ILinter {
         return Result(this.name())
     }
 
-    override fun lint(task: ITask, manifest: Manifest): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 }

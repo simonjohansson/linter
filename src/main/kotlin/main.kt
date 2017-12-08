@@ -39,6 +39,7 @@ fun lint(arguments: Args): List<Result> {
     return Linter(
             requiredFilesLinter = RequiredFilesLinter(reader),
             requiredFieldsLinter = RequiredFieldsLinter(),
+            requiredAsSecretLinter = RequiredAsSecretLinter(),
             runLinter = RunLinter(reader),
             deployLinter = DeployLinter(reader),
             repoLinter = RepoLinter(),

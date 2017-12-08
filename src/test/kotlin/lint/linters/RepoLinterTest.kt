@@ -51,16 +51,5 @@ class RepoLinterTest {
         assertThat(result.errors).hasSize(1)
         assertErrorMessage(result, "It looks like you are using SSH, but no private key provided in `repo.deploy_key`")
     }
-
-    @Test
-    fun `it fails if private key is not a var`() {
-        val manifest = Manifest(
-                repo = Repo("git@github.com:simonjohansson/test-repo.git",
-                        private_key = "Im not a secret!")
-        )
-        val result = subject.lint(manifest)
-
-        assertThat(result.errors).hasSize(1)
-        assertErrorMessage(result, "Key provided in 'repo.deploy_key' must be a var, not a key in clear text.")
-    }
+    
 }

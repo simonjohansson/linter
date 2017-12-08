@@ -53,7 +53,7 @@ class SecretsLinterTest {
         val manifest = Manifest(
                 org = "simon",
                 repo = Repo(
-                        uri = "git@github.com:simonjohansson/linter.git",
+                        uri = "git@github.com:simonjohansson/subject.git",
                         private_key = badValue1
                 ),
                 tasks = listOf(
@@ -114,7 +114,7 @@ class SecretsLinterTest {
         val manifest = Manifest(
                 org = "((its.secret))",
                 repo = Repo(
-                        uri = "git@github.com:simonjohansson/linter.git"
+                        uri = "git@github.com:simonjohansson/subject.git"
                 )
         )
         given(secrets.haveToken()).willReturn(false)

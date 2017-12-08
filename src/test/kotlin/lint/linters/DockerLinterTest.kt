@@ -7,6 +7,6 @@ class DockerLinterTest {
 
     @Test
     fun `Add tests`() {
-        // Add tests and implementation for docker linter.
+        // Add tests and implementation for docker subject.
     }
 }

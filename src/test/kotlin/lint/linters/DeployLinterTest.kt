@@ -34,11 +34,11 @@ class DeployLinterTest {
     @Test
     fun `it fails if missing required fields`() {
         val deploy = Deploy()
-        val result = subject.lint(deploy, Manifest())
+        val result = subject.lint(deploy)
         assertErrorMessage(result, "Required fields 'api, organization, password, space, username' are missing")
 
         val deploy2 = Deploy(organization = "yolo", api = "420")
-        val result2 = subject.lint(deploy2, Manifest())
+        val result2 = subject.lint(deploy2)
         assertErrorMessage(result2, "Required fields 'password, space, username' are missing")
     }
 
@@ -48,7 +48,7 @@ class DeployLinterTest {
         val path = "manifest.yml"
         given(reader.fileExists(path)).willReturn(false)
 
-        val result = subject.lint(deploy, Manifest())
+        val result = subject.lint(deploy)
 
         assertErrorMessage(result, "Cannot find Cloud Foundry manifest at path '$path'")
     }
@@ -59,7 +59,7 @@ class DeployLinterTest {
         val deploy = Deploy( manifest = path)
         given(reader.fileExists(path)).willReturn(false)
 
-        val result = subject.lint(deploy, Manifest())
+        val result = subject.lint(deploy)
 
         assertErrorMessage(result, "Cannot find Cloud Foundry manifest at path '$path'")
     }
@@ -76,12 +76,12 @@ class DeployLinterTest {
         )
         val manifest = Manifest(
                 org = "myOrg",
-                repo = Repo(uri = "https://github.com/simonjohansson/linter.git")
+                repo = Repo(uri = "https://github.com/simonjohansson/subject.git")
         )
 
         given(reader.fileExists(path)).willReturn(true)
 
-        val result = subject.lint(deploy, manifest)
+        val result = subject.lint(deploy)
         assertThat(result.errors).isEmpty()
     }
 
@@ -96,19 +96,8 @@ class DeployLinterTest {
         ))
         given(reader.fileExists(path)).willReturn(true)
 
-        val result = subject.lint(deploy, Manifest())
+        val result = subject.lint(deploy)
         assertErrorMessage(result, "Environment variable 'VaR2' must be upper case, its a env var yo!")
         assertErrorMessage(result, "Environment variable 'val3' must be upper case, its a env var yo!")
     }
-
-    @Test
-    fun `Fails if password is not a secret`() {
-        val deploy = Deploy(
-                password = "ImASecret"
-        )
-
-        val result = subject.lint(deploy, Manifest())
-        assertErrorMessage(result, "'password' must be a secret")
-    }
-
 }

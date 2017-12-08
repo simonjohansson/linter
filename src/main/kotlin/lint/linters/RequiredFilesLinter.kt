@@ -7,7 +7,6 @@ import model.manifest.Manifest
 import reader.IReader
 
 open class RequiredFilesLinter(private val reader: IReader) : ILinter {
-    override fun lint(task: ITask, manifest: Manifest) = throw DontUseMe()
 
     override fun name() = "Required Files"
 

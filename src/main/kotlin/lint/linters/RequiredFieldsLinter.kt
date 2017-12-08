@@ -7,7 +7,6 @@ import model.manifest.Manifest
 import model.manifest.Repo
 
 open class RequiredFieldsLinter() : ILinter {
-    override fun lint(task: ITask, manifest: Manifest) = throw DontUseMe()
 
     override fun lint() = throw DontUseMe()
 

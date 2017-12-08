@@ -7,9 +7,6 @@ import model.manifest.Manifest
 import secrets.ISecrets
 
 open class RepoLinter : ILinter {
-    override fun lint(task: ITask, manifest: Manifest): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     override fun name() = "Repo"
 
@@ -34,19 +31,6 @@ open class RepoLinter : ILinter {
             errors.add(
                     model.Error(
                             message = "It looks like you are using SSH, but no private key provided in `repo.deploy_key`",
-                            type = Error.Type.MISSING_FIELD,
-                            documentation = "https://github.com/simonjohansson/linter/wiki/Repo#missing_field"
-                    )
-            )
-        }
-
-        if (manifest.repo.uri.startsWith("git@github.com")
-                and manifest.repo.private_key.isNotEmpty()
-                and !manifest.repo.private_key.startsWith("((")
-                and !manifest.repo.private_key.endsWith("))")) {
-            errors.add(
-                    model.Error(
-                            message = "Key provided in 'repo.deploy_key' must be a var, not a key in clear text.",
                             type = Error.Type.MISSING_FIELD,
                             documentation = "https://github.com/simonjohansson/linter/wiki/Repo#missing_field"
                     )

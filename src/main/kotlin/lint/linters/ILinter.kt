@@ -9,5 +9,4 @@ interface ILinter {
     fun lint(): Result
     fun lint(manifest: Manifest): Result
     fun lint(task: ITask): Result
-    fun lint(task: ITask, manifest: Manifest): Result
 }

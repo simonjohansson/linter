@@ -10,7 +10,6 @@ import reader.IReader
 import secrets.ISecrets
 
 open class RunLinter(private val reader: IReader) : ILinter {
-    override fun lint(task: ITask) = throw DontUseMe()
 
     override fun name() = "Run"
 
@@ -18,7 +17,7 @@ open class RunLinter(private val reader: IReader) : ILinter {
 
     override fun lint(manifest: Manifest) = throw DontUseMe()
 
-    override fun lint(task: ITask, manifest: Manifest): Result {
+    override fun lint(task: ITask): Result {
         val runTask = task as Run
         return Result(
                 linter = this.name(),

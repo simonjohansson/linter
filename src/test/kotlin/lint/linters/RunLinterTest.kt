@@ -35,7 +35,7 @@ class RunLinterTest {
     @Test
     fun `it fails if nothing is specified`() {
         val task = Run()
-        val result = subject.lint(task, Manifest())
+        val result = subject.lint(task)
 
         assertThat(result.errors).hasSize(2)
         assertErrorMessage(result, "You must specify a command")
@@ -45,7 +45,7 @@ class RunLinterTest {
     @Test
     fun `it fails if no command is specified`() {
         val task = Run(image = "asdf")
-        val result = subject.lint(task, Manifest())
+        val result = subject.lint(task)
 
         assertThat(result.errors).hasSize(1)
         assertErrorMessage(result, "You must specify a command")
@@ -58,7 +58,7 @@ class RunLinterTest {
         BDDMockito.given(reader.fileExists(file)).willReturn(false)
 
         val task = Run(command = file, image = "jklsafdjkl")
-        val result = subject.lint(task, Manifest())
+        val result = subject.lint(task)
 
         assertThat(result.errors).hasSize(1)
         assertErrorMessage(result, "File '$file' is not found")
@@ -72,7 +72,7 @@ class RunLinterTest {
         BDDMockito.given(reader.fileExecutable(file)).willReturn(false)
 
         val task = Run(command = file, image = "asdf")
-        val result = subject.lint(task, Manifest())
+        val result = subject.lint(task)
 
         assertThat(result.errors).hasSize(1)
         assertErrorMessage(result, "File '$file' is not executable")
@@ -83,7 +83,7 @@ class RunLinterTest {
         BDDMockito.given(reader.fileExists("ci/test.sh")).willReturn(false)
 
         val task = Run(command = "ci/test.sh")
-        val result = subject.lint(task, Manifest())
+        val result = subject.lint(task)
 
         assertErrorMessage(result, "File 'ci/test.sh' is not found")
     }
@@ -94,7 +94,7 @@ class RunLinterTest {
         BDDMockito.given(reader.fileExecutable("ci/test.sh")).willReturn(false)
 
         val task = Run(command = "ci/test.sh")
-        val result = subject.lint(task, Manifest())
+        val result = subject.lint(task)
 
         assertErrorMessage(result, "File 'ci/test.sh' is not executable")
     }
@@ -105,7 +105,7 @@ class RunLinterTest {
         BDDMockito.given(reader.fileExecutable("test.sh")).willReturn(true)
 
         val task = Run(command = "test.sh")
-        val result = subject.lint(task, Manifest())
+        val result = subject.lint(task)
 
         assertThat(result.errors).hasSize(1)
         assertErrorMessage(result, "You must specify a image")
@@ -117,7 +117,7 @@ class RunLinterTest {
         BDDMockito.given(reader.fileExecutable("test.sh")).willReturn(true)
 
         val task = Run(command = "test.sh", image = "lkjasdf")
-        val result = subject.lint(task, Manifest())
+        val result = subject.lint(task)
 
         Truth.assertThat(result).isEqualTo(Result(linter = subject.name()))
     }
@@ -130,7 +130,7 @@ class RunLinterTest {
                 "VAR3" to "value",
                 "var4" to "value"
         ))
-        val result = subject.lint(task, Manifest())
+        val result = subject.lint(task)
 
         assertErrorMessage(result, "Environment variable 'VaR2' must be upper case, its a env var yo!")
         assertErrorMessage(result, "Environment variable 'var4' must be upper case, its a env var yo!")

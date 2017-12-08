@@ -159,7 +159,4 @@ open class SecretsLinter(val secrets: ISecrets) : ILinter {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun lint(task: ITask, manifest: Manifest): Result {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 }
