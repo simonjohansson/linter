@@ -4,8 +4,6 @@ import com.google.common.truth.Truth.assertThat
 import model.manifest.Docker
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
-import reader.IReader
 
 class DockerLinterTest {
 

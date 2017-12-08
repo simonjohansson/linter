@@ -3,15 +3,12 @@ package lint.linters
 import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import model.Result
-import model.manifest.Manifest
-import model.manifest.Repo
 import model.manifest.Run
 import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito
 import org.mockito.Mockito.mock
 import reader.IReader
-import secrets.ISecrets
 
 class RunLinterTest {
 

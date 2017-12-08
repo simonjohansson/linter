@@ -5,9 +5,6 @@ import model.manifest.Manifest
 import model.manifest.Repo
 import org.junit.Before
 import org.junit.Test
-import org.mockito.BDDMockito.given
-import org.mockito.Mockito.mock
-import secrets.ISecrets
 
 class RepoLinterTest {
 

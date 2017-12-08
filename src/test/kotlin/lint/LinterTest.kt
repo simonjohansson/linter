@@ -1,13 +1,16 @@
 package lint
 
 import lint.linters.*
-import model.manifest.*
+import model.manifest.Deploy
+import model.manifest.Docker
+import model.manifest.Manifest
+import model.manifest.Run
 import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito.given
-import org.mockito.Mock
 import org.mockito.Mockito
-import org.mockito.Mockito.*
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.times
 import parser.IParser
 import java.util.*
 

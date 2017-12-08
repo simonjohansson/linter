@@ -2,18 +2,14 @@ package lint.linters
 
 import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
-import junit.framework.Assert.fail
 import model.manifest.Deploy
 import model.manifest.Manifest
 import model.manifest.Repo
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
-import org.mockito.BDDMockito.anyString
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.mock
 import reader.IReader
-import secrets.ISecrets
 
 class DeployLinterTest {
 
