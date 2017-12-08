@@ -16,20 +16,18 @@ import secrets.ISecrets
 class RunLinterTest {
 
     lateinit var reader: IReader
-    lateinit var secrets: ISecrets
     lateinit var subject: RunLinter
 
 
     @Before
     fun setup() {
         reader = mock(IReader::class.java)
-        secrets = mock(ISecrets::class.java)
-        subject = RunLinter(reader, secrets)
+        subject = RunLinter(reader)
     }
 
     @Test
     fun `it has the correct name`() {
-        val linter = RunLinter(reader, secrets)
+        val linter = RunLinter(reader)
 
         Truth.assertThat(linter.name()).isEqualTo("Run")
     }

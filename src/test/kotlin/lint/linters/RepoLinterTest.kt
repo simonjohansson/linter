@@ -11,13 +11,11 @@ import secrets.ISecrets
 
 class RepoLinterTest {
 
-    lateinit var secrets: ISecrets
     lateinit var subject: RepoLinter
 
     @Before
     fun setup() {
-        secrets = mock(ISecrets::class.java)
-        subject = RepoLinter(secrets)
+        subject = RepoLinter()
     }
 
     @Test
@@ -65,21 +63,4 @@ class RepoLinterTest {
         assertThat(result.errors).hasSize(1)
         assertErrorMessage(result, "Key provided in 'repo.deploy_key' must be a var, not a key in clear text.")
     }
-
-    @Test
-    fun `No errors if private key is in Vault`() {
-        val manifest = Manifest(
-                org = "yolo",
-                repo = Repo(
-                        "git@github.com:simonjohansson/test-repo.git",
-                        private_key = "((deploy-key.private))")
-        )
-        given(secrets.exists(manifest.org, manifest.getRepoName(), manifest.repo.private_key))
-                .willReturn(true)
-
-        val result = subject.lint(manifest)
-
-        assertThat(result.errors).hasSize(0)
-    }
-
 }

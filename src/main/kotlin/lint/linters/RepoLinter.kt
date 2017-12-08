@@ -6,7 +6,7 @@ import model.manifest.ITask
 import model.manifest.Manifest
 import secrets.ISecrets
 
-open class RepoLinter(val secrets: ISecrets) : ILinter {
+open class RepoLinter : ILinter {
     override fun lint(task: ITask, manifest: Manifest): Result {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

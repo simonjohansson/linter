@@ -9,7 +9,7 @@ import model.manifest.Run
 import reader.IReader
 import secrets.ISecrets
 
-open class RunLinter(private val reader: IReader, private val secrets: ISecrets) : ILinter {
+open class RunLinter(private val reader: IReader) : ILinter {
     override fun lint(task: ITask) = throw DontUseMe()
 
     override fun name() = "Run"

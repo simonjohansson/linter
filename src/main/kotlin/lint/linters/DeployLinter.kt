@@ -7,10 +7,8 @@ import model.manifest.Deploy
 import model.manifest.ITask
 import model.manifest.Manifest
 import reader.IReader
-import secrets.ISecrets
 
-
-open class DeployLinter(val reader: IReader, val secrets: ISecrets) : ILinter {
+open class DeployLinter(val reader: IReader) : ILinter {
     override fun lint(task: ITask) = throw DontUseMe()
 
     override fun name() = "Deploy"

@@ -19,13 +19,11 @@ class DeployLinterTest {
 
     lateinit var subject: DeployLinter
     lateinit var reader: IReader
-    lateinit var secrets: ISecrets
 
     @Before
     fun setup() {
         reader = mock(IReader::class.java)
-        secrets = mock(ISecrets::class.java)
-        subject = DeployLinter(reader, secrets)
+        subject = DeployLinter(reader)
     }
 
     @Test
@@ -82,8 +80,6 @@ class DeployLinterTest {
         )
 
         given(reader.fileExists(path)).willReturn(true)
-        given(secrets.exists(manifest.org, manifest.getRepoName(), deploy.password)).willReturn(true)
-
 
         val result = subject.lint(deploy, manifest)
         assertThat(result.errors).isEmpty()

@@ -6,7 +6,7 @@ import model.manifest.Manifest
 import reader.Reader
 import secrets.Secrets
 
-open class DockerLinter(val reader: Reader, val secrets: Secrets) : ILinter {
+open class DockerLinter(val reader: Reader) : ILinter {
     override fun name() = "Docker"
 
     override fun lint(): Result {
