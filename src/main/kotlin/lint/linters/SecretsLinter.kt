@@ -17,12 +17,7 @@ open class SecretsLinter(val secrets: ISecrets) : ILinter {
         return this.get(reciever)!!
     }
 
-    private fun Any.isString() =
-            when (this) {
-                is String -> true
-                else -> false
-            }
-
+    private fun Any.isString() = this is String
 
     private fun traverse(obj: Any): List<String> {
         return when (obj) {
@@ -82,11 +77,6 @@ open class SecretsLinter(val secrets: ISecrets) : ILinter {
                                 .map { it.getValue(obj)!! }
                                 .filter { !it.isString() }
                                 .flatMap { traverse(it) }
-                    }
-
-
-                    else -> {
-                        throw RuntimeException("Not implemented for ${obj::class}")
                     }
                 }
             }

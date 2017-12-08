@@ -3,7 +3,6 @@ package build
 import model.manifest.*
 import model.manifest.Run
 import model.pipeline.*
-import model.pipeline.plan.*
 
 
 interface IBuild {
@@ -171,7 +170,7 @@ class ConcoursePipelineBuilder : IBuild {
                                         tag = tag)
                         ),
                         params = run.vars,
-                        run = model.pipeline.plan.Run(
+                        run = model.pipeline.Run(
                                 path = makeCorrectPath(run.command),
                                 dir = repoName
                         ),

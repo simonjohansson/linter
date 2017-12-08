@@ -1,21 +1,17 @@
 package model.manifest
 
-interface ITask {
+sealed class ITask {
     fun name() = when(this) {
         is Run -> this.command
         is Deploy -> "deploy-${this.organization}-${this.space}"
         is Docker -> "docker-push"
-
-        else -> {
-            throw RuntimeException()
-        }
     }
 }
 
 data class Run(
         val command: String = "",
         val image: String = "",
-        val vars: Map<String, String> = emptyMap()): ITask, CI
+        val vars: Map<String, String> = emptyMap()): ITask()
 
 data class Deploy(
         val api: String = "",
@@ -26,22 +22,22 @@ data class Deploy(
         val manifest: String = "manifest.yml",
         val skip_cert_check: Boolean = false,
         val vars: Map<String, String> = emptyMap()
-): ITask, CI
+): ITask()
 
 data class Docker(
         val email: String = "",
         val username: String = "",
         val password: String = "",
         val repository: String = ""
-): ITask, CI
+): ITask()
 
-data class Repo(val uri: String = "", val private_key: String = ""): CI
+data class Repo(val uri: String = "", val private_key: String = "")
 
 data class Manifest(
         val org: String = "",
         val repo: Repo = Repo(),
         val tasks: List<ITask> = listOf()
-): CI {
+) {
     fun getRepoName(): String {
         if(this.repo.uri.isEmpty()) {
             throw RuntimeException()
@@ -52,5 +48,3 @@ data class Manifest(
         return find.groups.last()!!.value
     }
 }
-
-interface CI

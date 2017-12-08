@@ -1,17 +1,14 @@
 package lint.linters.helpers
 
 import model.Error
-import model.manifest.Deploy
-import model.manifest.ITask
-import model.manifest.Manifest
-import model.manifest.Run
+import model.manifest.*
 import secrets.ISecrets
 
 fun environmentVarsKeysLinter(task: ITask): List<model.Error> {
     val varsKey = when (task) {
         is Run -> task.vars.keys
         is Deploy -> task.vars.keys
-        else -> throw RuntimeException()
+        is Docker -> TODO()
     }
 
     return varsKey.filter { it != it.toUpperCase() }
