@@ -1,10 +1,10 @@
 package lint.linters
 
 import model.Result
-import model.manifest.*
+import model.manifest.ITask
+import model.manifest.Manifest
 import secrets.ISecrets
-import kotlin.reflect.KProperty1
-import kotlin.reflect.memberProperties
+import kotlin.reflect.declaredMemberProperties
 
 open class SecretsLinter(val secrets: ISecrets) : ILinter {
     override fun name() = "Secrets"
@@ -13,91 +13,25 @@ open class SecretsLinter(val secrets: ISecrets) : ILinter {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    private fun <T, R> KProperty1<T, R>.getValue(reciever: T): R {
-        return this.get(reciever)!!
-    }
-
-    private fun Any.isString() = this is String
-
-    private fun traverse(obj: Any): List<String> {
-        return when (obj) {
-            is Manifest -> {
-
-                return (Manifest::class.memberProperties
-                        .map { it.getValue(obj)!! }
-                        .filter { it.isString() } as List<String> + Manifest::class.memberProperties
-                        .map { it.getValue(obj)!! }
-                        .filter { !it.isString() }
-                        .flatMap { traverse(it) })
-                        .filter { it.startsWith("((") and it.endsWith("))") }
-            }
-
-            is Repo -> {
-                val strings = Repo::class.memberProperties
-                        .map { it.getValue(obj)!! }
-                        .filter { it.isString() }
-
-                return strings as List<String> + Repo::class.memberProperties
-                        .map { it.getValue(obj)!! }
-                        .filter { !it.isString() }
-                        .flatMap { traverse(it) }
-            }
-
-            is ITask -> {
-                when (obj) {
-                    is Run -> {
-                        val strings = Run::class.memberProperties
-                                .map { it.getValue(obj)!! }
-                                .filter { it.isString() }
-
-                        return strings as List<String> + Run::class.memberProperties
-                                .map { it.getValue(obj)!! }
-                                .filter { !it.isString() }
-                                .flatMap { traverse(it) }
-
-                    }
-
-                    is Deploy -> {
-                        val strings = Deploy::class.memberProperties
-                                .map { it.getValue(obj)!! }
-                                .filter { it.isString() }
-
-                        return strings as List<String> + Deploy::class.memberProperties
-                                .map { it.getValue(obj)!! }
-                                .filter { !it.isString() }
-                                .flatMap { traverse(it) }
-                    }
-
-                    is Docker -> {
-                        val strings = Docker::class.memberProperties
-                                .map { it.getValue(obj)!! }
-                                .filter { it.isString() }
-
-                        return strings as List<String> + Docker::class.memberProperties
-                                .map { it.getValue(obj)!! }
-                                .filter { !it.isString() }
-                                .flatMap { traverse(it) }
-                    }
-                }
-            }
-
-            is List<*> -> obj.flatMap { traverse(it!!) }
-
-            is Boolean -> emptyList()
-
-            is Map<*, *> -> {
-                val strings = obj.values
-                        .filter { it is String }
-
-                return strings as List<String> +
-                        obj.values.filter { it !is String }
-                                .flatMap { traverse(it!!) }
-            }
-
-            else -> {
-                throw RuntimeException("Not implemented for ${obj::class}")
-            }
-        }
+    /*
+    Here be dragons.
+    For any object returns all the properties of that object that are strings, recursively calls for the others fields.
+    In the end we filter out all fields that starts with (( and ends with )).
+     */
+    fun findSecretLookingStrings(obj: Any): List<String> = when (obj) {
+        is List<*> -> obj.flatMap { findSecretLookingStrings(it!!) }
+        is Map<*, *> -> obj.values
+                .filter { it is String } as List<String> +
+                obj.values.filter { it !is String }
+                        .flatMap { findSecretLookingStrings(it!!) }
+        else -> (obj.javaClass.kotlin.declaredMemberProperties
+                .map { it.get(obj) }
+                .filter { it is String } as List<String> +
+                obj.javaClass.kotlin.declaredMemberProperties
+                        .map { it.get(obj) }
+                        .filter { it !is String }
+                        .flatMap { findSecretLookingStrings(it!!) })
+                .filter { it.startsWith("((") and it.endsWith("))") }
     }
 
     private fun badFormatError(badSecret: String) = model.Error(
@@ -126,7 +60,7 @@ open class SecretsLinter(val secrets: ISecrets) : ILinter {
 
     private fun missingKeys(secretsValues: List<String>, manifest: Manifest) =
             secretsValues
-                    .filter { it.contains(".") && this.secrets.haveToken()}
+                    .filter { it.contains(".") && this.secrets.haveToken() }
                     .filter { !secrets.exists(manifest.org, manifest.getRepoName(), it) }
                     .map { secretNotFoundError(it, manifest) }
 
@@ -143,11 +77,11 @@ open class SecretsLinter(val secrets: ISecrets) : ILinter {
     }
 
     override fun lint(manifest: Manifest): Result {
-        val secretsValues = traverse(manifest)
+        val secretsValues = findSecretLookingStrings(manifest)
 
         val errors = missingToken(secretsValues) +
-                        badKeys(secretsValues) +
-                        missingKeys(secretsValues, manifest)
+                badKeys(secretsValues) +
+                missingKeys(secretsValues, manifest)
 
         return Result(
                 linter = this.name(),
