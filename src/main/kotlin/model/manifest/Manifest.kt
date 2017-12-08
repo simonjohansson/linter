@@ -1,17 +1,15 @@
 package model.manifest
 
 sealed class ITask {
-    fun name() = when(this) {
-        is Run -> this.command
-        is Deploy -> "deploy-${this.organization}-${this.space}"
-        is Docker -> "docker-push"
-    }
+    abstract fun name(): String
 }
 
 data class Run(
         val command: String = "",
         val image: String = "",
-        val vars: Map<String, String> = emptyMap()): ITask()
+        val vars: Map<String, String> = emptyMap()) : ITask() {
+    override fun name() = this.command
+}
 
 data class Deploy(
         val api: String = "",
@@ -22,14 +20,18 @@ data class Deploy(
         val manifest: String = "manifest.yml",
         val skip_cert_check: Boolean = false,
         val vars: Map<String, String> = emptyMap()
-): ITask()
+) : ITask() {
+    override fun name() = "deploy-${this.organization}-${this.space}"
+}
 
 data class Docker(
         val email: String = "",
         val username: String = "",
         val password: String = "",
         val repository: String = ""
-): ITask()
+) : ITask() {
+    override fun name() = "docker-push"
+}
 
 data class Repo(val uri: String = "", val private_key: String = "")
 
@@ -39,7 +41,7 @@ data class Manifest(
         val tasks: List<ITask> = listOf()
 ) {
     fun getRepoName(): String {
-        if(this.repo.uri.isEmpty()) {
+        if (this.repo.uri.isEmpty()) {
             throw RuntimeException()
         }
         val regex = Regex(""".*/(.*)\.git""")
