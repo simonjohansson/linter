@@ -13,6 +13,7 @@ class Linter(
         private val deployLinter: DeployLinter,
         private val repoLinter: RepoLinter,
         private val dockerLinter: DockerLinter,
+        private val secretsLinter: SecretsLinter,
         private val parser: IParser) {
 
     fun lint(): ArrayList<Result> {
@@ -21,6 +22,8 @@ class Linter(
         parser.parseManifest().map { manifest ->
             result.add(requiredFieldsLinter.lint(manifest))
             result.add(repoLinter.lint(manifest))
+            result.add(secretsLinter.lint(manifest))
+
             for (task in manifest.tasks) {
                 when (task) {
                     is Run -> result.add(runLinter.lint(task, manifest))

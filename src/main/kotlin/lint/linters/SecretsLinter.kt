@@ -6,7 +6,7 @@ import secrets.ISecrets
 import kotlin.reflect.KProperty1
 import kotlin.reflect.memberProperties
 
-class SecretsLinter(val secrets: ISecrets) : ILinter {
+open class SecretsLinter(val secrets: ISecrets) : ILinter {
     override fun name() = "Secrets"
 
     override fun lint(): Result {
@@ -27,11 +27,10 @@ class SecretsLinter(val secrets: ISecrets) : ILinter {
     private fun traverse(obj: Any): List<String> {
         return when (obj) {
             is Manifest -> {
-                val strings = Manifest::class.memberProperties
-                        .map { it.getValue(obj)!! }
-                        .filter { it.isString() }
 
-                return (strings as List<String> + Manifest::class.memberProperties
+                return (Manifest::class.memberProperties
+                        .map { it.getValue(obj)!! }
+                        .filter { it.isString() } as List<String> + Manifest::class.memberProperties
                         .map { it.getValue(obj)!! }
                         .filter { !it.isString() }
                         .flatMap { traverse(it) })
@@ -48,7 +47,7 @@ class SecretsLinter(val secrets: ISecrets) : ILinter {
                         .filter { !it.isString() }
                         .flatMap { traverse(it) }
             }
-//
+
             is ITask -> {
                 when (obj) {
                     is Run -> {
@@ -165,7 +164,6 @@ class SecretsLinter(val secrets: ISecrets) : ILinter {
                 errors = errors
         )
     }
-
 
     override fun lint(task: ITask): Result {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

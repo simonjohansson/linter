@@ -24,6 +24,7 @@ class LinterTest {
     lateinit var runLinter: RunLinter
     lateinit var deployLinter: DeployLinter
     lateinit var dockerLinter: DockerLinter
+    lateinit var secretsLinter: SecretsLinter
 
     lateinit var parser: IParser
     lateinit var linter: Linter
@@ -36,6 +37,7 @@ class LinterTest {
         runLinter = mock(RunLinter::class.java)
         deployLinter = mock(DeployLinter::class.java)
         dockerLinter = mock(DockerLinter::class.java)
+        secretsLinter = mock(SecretsLinter::class.java)
         parser = mock(IParser::class.java)
 
         linter = Linter(
@@ -45,6 +47,7 @@ class LinterTest {
                 deployLinter,
                 repoLinter,
                 dockerLinter,
+                secretsLinter,
                 parser
         )
     }
@@ -57,6 +60,7 @@ class LinterTest {
 
         assertThat(linter.lint()).isEqualTo(listOf(result))
         Mockito.verifyZeroInteractions(requiredFieldsLinter)
+        Mockito.verifyZeroInteractions(secretsLinter)
         Mockito.verifyZeroInteractions(repoLinter)
         Mockito.verifyZeroInteractions(runLinter)
         Mockito.verifyZeroInteractions(deployLinter)
@@ -65,20 +69,23 @@ class LinterTest {
     @Test
     fun `When manifest has one run task`() {
         val manifest = Manifest(tasks = listOf(Run()))
-        val resulta = Result(linter = "files")
-        val resultb = Result(linter = "required")
-        val resultc = Result(linter = "repo")
-        val resultd = Result(linter = "run1")
+        val files = Result(linter = "files")
+        val required = Result(linter = "required")
+        val repo = Result(linter = "repo")
+        val secrets = Result(linter = "secrets")
+        val run = Result(linter = "run1")
+
         given(parser.parseManifest()).willReturn(Optional.of(manifest))
 
-        given(requiredFilesLinter.lint()).willReturn(resulta)
-        given(requiredFieldsLinter.lint(manifest)).willReturn(resultb)
-        given(repoLinter.lint(manifest)).willReturn(resultc)
-        given(runLinter.lint(manifest.tasks[0], manifest)).willReturn(resultd)
+        given(requiredFilesLinter.lint()).willReturn(files)
+        given(requiredFieldsLinter.lint(manifest)).willReturn(required)
+        given(repoLinter.lint(manifest)).willReturn(repo)
+        given(runLinter.lint(manifest.tasks[0], manifest)).willReturn(run)
+        given(secretsLinter.lint(manifest)).willReturn(secrets)
 
         linter.lint()
 
-        assertThat(linter.lint()).isEqualTo(listOf(resulta, resultb, resultc, resultd))
+        assertThat(linter.lint()).isEqualTo(listOf(files, required, repo, secrets, run))
         Mockito.verifyZeroInteractions(deployLinter)
     }
 
@@ -92,27 +99,30 @@ class LinterTest {
                 Docker("docker")
         ))
 
-        val resulta = Result(linter = "files")
-        val resultb = Result(linter = "required")
-        val resultc = Result(linter = "repo")
-        val resultd = Result(linter = "test1")
-        val resulte = Result(linter = "build")
-        val resultf = Result(linter = "test2")
-        val resultg = Result(linter = "deploy")
-        val resulth = Result(linter = "docker")
+        val files = Result(linter = "files")
+        val required = Result(linter = "required")
+        val repo = Result(linter = "repo")
+        val secrets = Result(linter = "repo")
+        val test1 = Result(linter = "test1")
+        val build1 = Result(linter = "build")
+        val test2 = Result(linter = "test2")
+        val deploy = Result(linter = "deploy")
+        val docker = Result(linter = "docker")
 
         given(parser.parseManifest()).willReturn(Optional.of(manifest))
-        given(requiredFilesLinter.lint()).willReturn(resulta)
-        given(requiredFieldsLinter.lint(manifest)).willReturn(resultb)
-        given(repoLinter.lint(manifest)).willReturn(resultc)
-        given(runLinter.lint(manifest.tasks[0], manifest)).willReturn(resultd)
-        given(runLinter.lint(manifest.tasks[1], manifest)).willReturn(resulte)
-        given(runLinter.lint(manifest.tasks[2], manifest)).willReturn(resultf)
-        given(deployLinter.lint(manifest.tasks[3], manifest)).willReturn(resultg)
-        given(dockerLinter.lint(manifest.tasks[4])).willReturn(resulth)
+        given(requiredFilesLinter.lint()).willReturn(files)
+        given(requiredFieldsLinter.lint(manifest)).willReturn(required)
+        given(repoLinter.lint(manifest)).willReturn(repo)
+        given(runLinter.lint(manifest.tasks[0], manifest)).willReturn(test1)
+        given(runLinter.lint(manifest.tasks[1], manifest)).willReturn(build1)
+        given(runLinter.lint(manifest.tasks[2], manifest)).willReturn(test2)
+        given(deployLinter.lint(manifest.tasks[3], manifest)).willReturn(deploy)
+        given(dockerLinter.lint(manifest.tasks[4])).willReturn(docker)
+        given(dockerLinter.lint(manifest.tasks[4])).willReturn(docker)
+        given(secretsLinter.lint(manifest)).willReturn(secrets)
 
         linter.lint()
 
-        assertThat(linter.lint()).isEqualTo(listOf(resulta, resultb, resultc, resultd, resulte, resultf, resultg, resulth))
+        assertThat(linter.lint()).isEqualTo(listOf(files, required, repo, secrets, test1, build1, test2, deploy, docker))
     }
 }

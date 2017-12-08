@@ -43,6 +43,7 @@ fun lint(arguments: Args): List<Result> {
             deployLinter = DeployLinter(reader, secrets),
             repoLinter = RepoLinter(secrets),
             dockerLinter = DockerLinter(reader, secrets),
+            secretsLinter = SecretsLinter(secrets),
             parser = Parser(reader)).lint()
 }
 
