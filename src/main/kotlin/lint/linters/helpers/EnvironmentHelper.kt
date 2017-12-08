@@ -1,8 +1,9 @@
 package lint.linters.helpers
 
-import model.Error
-import model.manifest.*
-import secrets.ISecrets
+import model.manifest.Deploy
+import model.manifest.Docker
+import model.manifest.ITask
+import model.manifest.Run
 
 fun environmentVarsKeysLinter(task: ITask): List<model.Error> {
     val varsKey = when (task) {

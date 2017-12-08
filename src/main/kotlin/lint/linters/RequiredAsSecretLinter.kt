@@ -18,9 +18,7 @@ open class RequiredAsSecretLinter(): ILinter {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    private fun isSecret(value: String) = Regex("""
-        \(\([a-zA-Z0-9\-\_]+\.[a-zA-Z0-9\-\_]+\)\)
-        """.trimIndent()).matches(value)
+    private fun isSecret(value: String) = Regex("""\(\([a-zA-Z0-9\-_]+\.[a-zA-Z0-9\-_]+\)\)""").matches(value)
 
     private fun makeError(keyName: String) = Error(
             message = "'$keyName' must be a secret!",

@@ -44,14 +44,23 @@ class Secrets(private val vaultUrl: String = "https://10.244.18.2:8200",
         return keyInRepo(org, repoName, secret_key) || keyInOrg(org, secret_key)
     }
 
-    private fun keyInRepo(org: String, repoName: String, secret_key: String): Boolean {
-        val (map, value) = secret_key.replace("(", "").replace(")", "").split(".")
+    private fun getMapValue(secret: String): Pair<String, String> {
+        val regex = Regex("""\(\(([a-zA-Z0-9\-_]+)\.([a-zA-Z0-9\-_]+)\)\)""")
+        val groupValues = regex.find(secret)!!.groupValues
+        if(groupValues.size != 3)
+            throw RuntimeException("Could not parse out key value from $secret")
+
+        return (groupValues[1] to groupValues[2])
+    }
+
+    private fun keyInRepo(org: String, repoName: String, secret: String): Boolean {
+        val (map, value) = getMapValue(secret)
         val path = "/$vaultPrefix/$org/$repoName/$map"
         return valueInPath(value, path)
     }
 
-    private fun keyInOrg(org: String, secret_key: String): Boolean {
-        val (map, value) = secret_key.replace("(", "").replace(")", "").split(".")
+    private fun keyInOrg(org: String, secret: String): Boolean {
+        val (map, value) = getMapValue(secret)
         val path = "/$vaultPrefix/$org/$map"
         return valueInPath(value, path)
     }

@@ -1,7 +1,5 @@
 package model.pipeline
 
-import com.fasterxml.jackson.annotation.JacksonAnnotation
-import com.fasterxml.jackson.annotation.JacksonInject
 import com.fasterxml.jackson.annotation.JsonInclude
 
 interface ISource

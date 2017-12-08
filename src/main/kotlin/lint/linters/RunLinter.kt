@@ -7,7 +7,6 @@ import model.manifest.ITask
 import model.manifest.Manifest
 import model.manifest.Run
 import reader.IReader
-import secrets.ISecrets
 
 open class RunLinter(private val reader: IReader) : ILinter {
 

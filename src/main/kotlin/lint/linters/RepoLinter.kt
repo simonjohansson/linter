@@ -4,7 +4,6 @@ import model.Error
 import model.Result
 import model.manifest.ITask
 import model.manifest.Manifest
-import secrets.ISecrets
 
 open class RepoLinter : ILinter {
 

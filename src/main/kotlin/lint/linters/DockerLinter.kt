@@ -1,12 +1,12 @@
 package lint.linters
 
+import model.Error
 import model.Result
+import model.manifest.Docker
 import model.manifest.ITask
 import model.manifest.Manifest
-import reader.Reader
-import secrets.Secrets
 
-open class DockerLinter(val reader: Reader) : ILinter {
+open class DockerLinter : ILinter {
     override fun name() = "Docker"
 
     override fun lint(): Result {
@@ -18,7 +18,38 @@ open class DockerLinter(val reader: Reader) : ILinter {
     }
 
     override fun lint(task: ITask): Result {
-        return Result(this.name())
+        return Result(
+                linter = this.name(),
+                errors = requiredFieldsLinter(task as Docker)
+        )
     }
 
+
+    private fun requiredFieldsLinter(docker: Docker): List<Error> {
+        val missingRequiredFields: ArrayList<String> = arrayListOf()
+
+        if (docker.password.isEmpty())
+            missingRequiredFields.add("password")
+        if (docker.username.isEmpty())
+            missingRequiredFields.add("username")
+        if (docker.email.isEmpty())
+            missingRequiredFields.add("email")
+        if (docker.repository.isEmpty())
+            missingRequiredFields.add("repository")
+
+        val missingFields = missingRequiredFields
+                .sorted()
+                .joinToString(", ")
+
+        val errors: ArrayList<Error> = arrayListOf()
+        if (missingFields.isNotEmpty()) {
+            errors.add(model.Error(
+                    message = "Required fields '${missingRequiredFields.joinToString(", ")}' are missing",
+                    type = Error.Type.MISSING_FIELD,
+                    documentation = "https://github.com/simonjohansson/linter/wiki/Deploy#missing_field"
+            ))
+        }
+
+        return errors
+    }
 }
