@@ -53,19 +53,23 @@ open class SecretsLinter(val secrets: ISecrets) : ILinter {
         )
     }
 
+    private fun isSecret(secret: String) = Regex("""\(\(([a-zA-Z0-9\-_]+)\.([a-zA-Z0-9\-_]+)\)\)""")
+            .matches(secret)
+
+
     private fun badKeys(secretsValues: List<String>) =
             secretsValues
-                    .filter { !it.contains(".") }
+                    .filter { !isSecret(it) }
                     .map { badFormatError(it) }
 
     private fun missingKeys(secretsValues: List<String>, manifest: Manifest) =
             secretsValues
-                    .filter { it.contains(".") && this.secrets.haveToken() }
+                    .filter { isSecret(it) && this.secrets.haveToken() }
                     .filter { !secrets.exists(manifest.org, manifest.getRepoName(), it) }
                     .map { secretNotFoundError(it, manifest) }
 
     private fun missingToken(secretsValues: List<String>): List<model.Error> {
-        if (!secrets.haveToken() && secretsValues.filter { it.contains(".") }.isNotEmpty()) {
+        if (!secrets.haveToken() && secretsValues.filter { isSecret(it) }.isNotEmpty()) {
             return listOf(
                     model.Error(
                             message = "You have secrets in your env map, cannot lint unless you pass a vault token with " +
