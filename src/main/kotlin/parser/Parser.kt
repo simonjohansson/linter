@@ -16,38 +16,42 @@ class Parser(val reader: IReader) : IParser {
     override fun parseManifest() = when (reader.fileExists(".ci.yml")) {
         true -> {
             val content = reader.readFile(".ci.yml")
-            if(content.isEmpty()) {
+            if (content.isEmpty()) {
                 Optional.of(Manifest())
             } else {
                 val mapper = ObjectMapper(YAMLFactory())
-                val data: java.util.HashMap<*, *> = mapper.readValue(content, HashMap::class.java)
+                val data = mapper.readValue(content, HashMap::class.java)
                 Optional.of(mapToManifest(data))
             }
         }
         false -> Optional.empty()
     }
 
-    private fun mapToManifest(data: HashMap<*, *>): Manifest {
-        var org: String = ""
-        var repo: Repo = Repo()
+    private fun mapToManifest(data: HashMap<*, *>) = Manifest(
+            org = getOrg(data),
+            repo = getRepo(data),
+            tasks = getTasks(data))
 
-        if("org" in data) {
-            org = data["org"] as String
-        }
+    private fun getOrg(data: HashMap<*, *>) = if ("org" in data) {
+        data["org"] as String
+    } else ""
 
-        if("repo" in data) {
-            repo = parseRepo(data["repo"] as HashMap<String, String>)
-        }
+    private fun getRepo(data: HashMap<*, *>) = if ("repo" in data) {
+        parseRepo(data["repo"] as HashMap<String, String>)
+    } else Repo()
 
-        var tasks: List<ITask> = emptyList()
-        if("tasks" in data) {
-            val mapTasks = data["tasks"] as List<*>
-            tasks = mapTasks.map({
-                mapTaskToRealTask(it as HashMap<String, *>)
-            })
-        }
-        return Manifest(org = org, tasks = tasks, repo = repo)
+    private fun parseRepo(repo: HashMap<String, String>): Repo {
+        return Gson().fromJson(Gson().toJson(repo), Repo::class.java)
     }
+
+    private fun getTasks(data: HashMap<*, *>) =
+            if ("tasks" in data) {
+                val mapTasks = data["tasks"] as List<*>
+                mapTasks.map({
+                    mapTaskToRealTask(it as HashMap<String, *>)
+                })
+            } else listOf()
+
 
     private fun mapTaskToRealTask(task: HashMap<String, *>): ITask = when (task["task"]) {
         "run" -> toITask(task, Run::class.java)
@@ -60,14 +64,6 @@ class Parser(val reader: IReader) : IParser {
     }
 
     private fun toITask(task: HashMap<String, *>, type: Class<*>): ITask {
-        val gson = Gson()
-        val json = gson.toJson(task)
-        return gson.fromJson(json, type) as ITask
-    }
-
-    private fun parseRepo(repo: HashMap<String, String>): Repo {
-        val gson = Gson()
-        val json = gson.toJson(repo)
-        return gson.fromJson(json, Repo::class.java)
+        return Gson().fromJson(Gson().toJson(task), type) as ITask
     }
 }
