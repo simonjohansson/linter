@@ -35,7 +35,11 @@ fun printResults(results: List<Result>) {
 
 fun lint(arguments: Args): List<Result> {
     val reader = Reader(arguments.path)
-    val secrets = Secrets(vaultToken = arguments.vaultToken, sslVerify = false)
+    val secrets = Secrets(
+            vaultUrl = "https://vault.gcp.springernature.io",
+            vaultToken = arguments.vaultToken,
+            sslVerify = false
+    )
     return Linter(
             requiredFilesLinter = RequiredFilesLinter(reader),
             requiredFieldsLinter = RequiredFieldsLinter(),
