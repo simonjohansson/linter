@@ -19,10 +19,10 @@ class DockerLinterTest {
         val docker0 = Docker()
         assertThat(subject.lint(docker0).errors).hasSize(1)
 
-        val docker2 = Docker("a", "b")
+        val docker2 = Docker("b")
         assertThat(subject.lint(docker2).errors).hasSize(1)
 
-        val docker4 = Docker("a", "b", "c", "d")
+        val docker4 = Docker("b", "c", "d")
         assertThat(subject.lint(docker4).errors).hasSize(0)
 
     }

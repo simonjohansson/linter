@@ -98,7 +98,7 @@ class LinterTest {
                 Run("build"),
                 Deploy("deploy"),
                 Run("test2"),
-                Docker("docker")
+                Docker()
         ))
         given(parser.parseManifest()).willReturn(Optional.of(manifest))
 

@@ -54,7 +54,6 @@ class ConcoursePipelineBuilder : IBuild {
                     .map {
                         val docker = it as Docker
                         Resource(docker.name(), "docker-image", DockerSource(
-                                email = it.email,
                                 username = it.username,
                                 password = it.password,
                                 repository = it.repository

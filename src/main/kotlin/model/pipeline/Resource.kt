@@ -21,7 +21,6 @@ data class CFSource(
 ) : ISource
 
 data class DockerSource(
-        val email: String = "",
         val username: String = "",
         val password: String = "",
         val repository: String = ""

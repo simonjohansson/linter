@@ -255,7 +255,6 @@ class ConcoursePipelineBuilderTest {
         )
 
         val docker = Docker(
-                email = "asd",
                 username = "asd",
                 password = "asd",
                 repository = "asd/asd"
@@ -301,7 +300,6 @@ class ConcoursePipelineBuilderTest {
                         |- name: docker-push
                         |  type: docker-image
                         |  source:
-                        |    email: asd
                         |    username: asd
                         |    password: asd
                         |    repository: asd/asd

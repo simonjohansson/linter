@@ -25,7 +25,6 @@ data class Deploy(
 }
 
 data class Docker(
-        val email: String = "",
         val username: String = "",
         val password: String = "",
         val repository: String = ""

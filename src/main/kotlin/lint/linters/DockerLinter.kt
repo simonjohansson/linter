@@ -32,8 +32,6 @@ open class DockerLinter : ILinter {
             missingRequiredFields.add("password")
         if (docker.username.isEmpty())
             missingRequiredFields.add("username")
-        if (docker.email.isEmpty())
-            missingRequiredFields.add("email")
         if (docker.repository.isEmpty())
             missingRequiredFields.add("repository")
 

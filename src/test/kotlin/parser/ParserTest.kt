@@ -71,7 +71,6 @@ class ParserTest {
                                         )
                                 ),
                                 Docker(
-                                        email = "asd",
                                         username = "asd",
                                         password = "asd",
                                         repository = "asd/asd"

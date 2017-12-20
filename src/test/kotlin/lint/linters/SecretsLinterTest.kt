@@ -80,7 +80,6 @@ class SecretsLinterTest {
                                 )
                         ),
                         Docker(
-                                email = "Email",
                                 username = badValue4,
                                 password = missingValue2,
                                 repository = "repo"
