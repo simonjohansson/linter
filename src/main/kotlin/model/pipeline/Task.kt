@@ -20,7 +20,7 @@ data class Config(
         val inputs: List<Input> = listOf(Input())
 )
 
-data class Task(val task: String = "", val config: Config = Config()): PlanItem()
+data class Task(val task: String = "", val privileged: Boolean = true, val config: Config = Config()): PlanItem()
 
 sealed class IPutParams
 

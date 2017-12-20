@@ -55,6 +55,7 @@ class ConcoursePipelineBuilderTest {
                         |  - get: ${manifest.getRepoName()}
                         |    trigger: true
                         |  - task: ${(manifest.tasks[0] as Run).command}
+                        |    privileged: true
                         |    config:
                         |      platform: linux
                         |      image_resource:
@@ -102,6 +103,7 @@ class ConcoursePipelineBuilderTest {
                         |  - get: ${manifest.getRepoName()}
                         |    trigger: true
                         |  - task: ${(manifest.tasks[0] as Run).command}
+                        |    privileged: true
                         |    config:
                         |      platform: linux
                         |      image_resource:
@@ -122,6 +124,7 @@ class ConcoursePipelineBuilderTest {
                         |    passed:
                         |    - ${(manifest.tasks[0] as Run).command}
                         |  - task: ${(manifest.tasks[1] as Run).name()}
+                        |    privileged: true
                         |    config:
                         |      platform: linux
                         |      image_resource:
@@ -142,6 +145,7 @@ class ConcoursePipelineBuilderTest {
                         |    passed:
                         |    - ci/build.sh
                         |  - task: ./other-path/build.sh
+                        |    privileged: true
                         |    config:
                         |      platform: linux
                         |      image_resource:
@@ -203,6 +207,7 @@ class ConcoursePipelineBuilderTest {
                         |  - get: ${manifest.getRepoName()}
                         |    trigger: true
                         |  - task: ${(manifest.tasks[0] as Run).name()}
+                        |    privileged: true
                         |    config:
                         |      platform: linux
                         |      image_resource:
@@ -265,6 +270,7 @@ class ConcoursePipelineBuilderTest {
                         Run("./integration-tests.sh", "busybox"),
                         deploy2,
                         docker
+
                 )
         )
 
@@ -306,6 +312,7 @@ class ConcoursePipelineBuilderTest {
                         |  - get: ${manifest.getRepoName()}
                         |    trigger: true
                         |  - task: ${(manifest.tasks[0] as Run).name()}
+                        |    privileged: true
                         |    config:
                         |      platform: linux
                         |      image_resource:
@@ -337,6 +344,7 @@ class ConcoursePipelineBuilderTest {
                         |    passed:
                         |    - ${(manifest.tasks[1] as Deploy).name()}
                         |  - task: ${(manifest.tasks[2] as Run).name()}
+                        |    privileged: true
                         |    config:
                         |      platform: linux
                         |      image_resource:

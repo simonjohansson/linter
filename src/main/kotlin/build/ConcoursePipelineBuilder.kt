@@ -101,9 +101,6 @@ class ConcoursePipelineBuilder : IBuild {
                             )
                     )
                 }
-                else -> {
-                    throw Exception()
-                }
             }
         }
     }
@@ -163,6 +160,7 @@ class ConcoursePipelineBuilder : IBuild {
         val (image, tag) = dockerImage(run.image)
         return Task(
                 task = run.command,
+
                 config = Config(
                         image_resource = ImageResource(
                                 source = Source(
