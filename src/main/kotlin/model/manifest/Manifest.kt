@@ -13,15 +13,15 @@ data class Run(
 
 data class Deploy(
         val api: String = "",
-        val username: String = "",
-        val password: String = "",
-        val organization: String = "",
+        val org: String = "",
         val space: String = "",
+        val username: String = "((cf-credentials.username))",
+        val password: String = "((cf-credentials.password))",
         val manifest: String = "manifest.yml",
         val skip_cert_check: Boolean = false,
         val vars: Map<String, String> = emptyMap()
 ) : ITask() {
-    override fun name() = "deploy-${this.organization}-${this.space}"
+    override fun name() = "deploy-${this.space}"
 }
 
 data class Docker(

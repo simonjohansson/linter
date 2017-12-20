@@ -174,12 +174,9 @@ class ConcoursePipelineBuilderTest {
                 tasks = listOf(
                         Run("./test.sh", "busybox:yolo"),
                         Deploy(
-                                manifest = "ci/manifest.yml",
                                 api = "api",
-                                username = "username",
-                                password = "password",
-                                organization = "organization",
-                                space = "space"
+                                space = "space",
+                                manifest = "ci/manifest.yml"
                         )
                 )
         )
@@ -196,7 +193,7 @@ class ConcoursePipelineBuilderTest {
                         |    api: ${(manifest.tasks.last() as Deploy).api}
                         |    username: ${(manifest.tasks.last() as Deploy).username}
                         |    password: ${(manifest.tasks.last() as Deploy).password}
-                        |    organization: ${(manifest.tasks.last() as Deploy).organization}
+                        |    organization: ${manifest.org}
                         |    space: ${(manifest.tasks.last() as Deploy).space}
                         |    skip_cert_check: false
                         |jobs:
@@ -242,17 +239,11 @@ class ConcoursePipelineBuilderTest {
 
         val deploy1 = Deploy(
                 api = "api1",
-                username = "username1",
-                password = "password1",
-                organization = "organization1",
                 space = "space1"
         )
 
         val deploy2 = Deploy(
                 api = "api2",
-                username = "username2",
-                password = "password2",
-                organization = "organization2",
                 space = "space2",
                 vars = mapOf("SIMON" to "Johansson")
 
@@ -274,7 +265,6 @@ class ConcoursePipelineBuilderTest {
                         Run("./integration-tests.sh", "busybox"),
                         deploy2,
                         docker
-
                 )
         )
 
@@ -290,7 +280,7 @@ class ConcoursePipelineBuilderTest {
                         |    api: ${(manifest.tasks[1] as Deploy).api}
                         |    username: ${(manifest.tasks[1] as Deploy).username}
                         |    password: ${(manifest.tasks[1] as Deploy).password}
-                        |    organization: ${(manifest.tasks[1] as Deploy).organization}
+                        |    organization: ${manifest.org}
                         |    space: ${(manifest.tasks[1] as Deploy).space}
                         |    skip_cert_check: false
                         |- name: ${(manifest.tasks[3] as Deploy).name()}
@@ -299,7 +289,7 @@ class ConcoursePipelineBuilderTest {
                         |    api: ${(manifest.tasks[3] as Deploy).api}
                         |    username: ${(manifest.tasks[3] as Deploy).username}
                         |    password: ${(manifest.tasks[3] as Deploy).password}
-                        |    organization: ${(manifest.tasks[3] as Deploy).organization}
+                        |    organization: ${manifest.org}
                         |    space: ${(manifest.tasks[3] as Deploy).space}
                         |    skip_cert_check: false
                         |- name: docker-push
@@ -378,7 +368,7 @@ class ConcoursePipelineBuilderTest {
                         |  - get: my-cool-repo
                         |    trigger: true
                         |    passed:
-                        |    - deploy-organization2-space2
+                        |    - deploy-space2
                         |  - put: docker-push
                         |    params:
                         |      build: ${manifest.getRepoName()}

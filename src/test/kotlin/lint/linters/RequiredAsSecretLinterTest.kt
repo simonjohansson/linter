@@ -62,7 +62,7 @@ class RequiredAsSecretLinterTest {
                                 password = "((docker.docker-password))"
                         ),
                         Deploy(
-                                password = "((cf.cf_password))"
+                                password = "((cf-credentials.password))"
                         )
                 )
         )

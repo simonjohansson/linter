@@ -22,14 +22,16 @@ class SecretsLinterTest {
 
     @Test
     fun `When there are no secrets, there are no errors`() {
+        // Deploy defaults to using secrets for username and password
         val manifest = Manifest(
+                org = "test",
                 tasks = listOf(
                         Run(),
-                        Deploy(),
                         Docker()
                 )
 
         )
+
         val result = subject.lint(manifest)
         assertThat(result.errors).isEmpty()
     }
@@ -67,11 +69,8 @@ class SecretsLinterTest {
 
                         ),
                         Deploy(
-                                password = goodValue2,
                                 api = "api",
-                                username = "username",
                                 space = badValue5,
-                                organization = "org",
                                 manifest = "manifest.yml",
                                 skip_cert_check = false,
                                 vars = mapOf(
@@ -94,6 +93,9 @@ class SecretsLinterTest {
         given(secrets.exists(manifest.org, manifest.getRepoName(), goodValue2)).willReturn(true)
         given(secrets.exists(manifest.org, manifest.getRepoName(), missingValue1)).willReturn(false)
         given(secrets.exists(manifest.org, manifest.getRepoName(), missingValue2)).willReturn(false)
+        given(secrets.exists(manifest.org, manifest.getRepoName(), "((cf-credentials.username))")).willReturn(true)
+        given(secrets.exists(manifest.org, manifest.getRepoName(), "((cf-credentials.password))")).willReturn(true)
+
 
         val result = subject.lint(manifest)
 

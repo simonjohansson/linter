@@ -31,11 +31,16 @@ class DeployLinterTest {
     fun `it fails if missing required fields`() {
         val deploy = Deploy()
         val result = subject.lint(deploy)
-        assertErrorMessage(result, "Required fields 'api, organization, password, space, username' are missing")
+        assertErrorMessage(result, "Required fields 'api, space' are missing")
 
-        val deploy2 = Deploy(organization = "yolo", api = "420")
+        val deploy2 = Deploy(api = "420")
         val result2 = subject.lint(deploy2)
-        assertErrorMessage(result2, "Required fields 'password, space, username' are missing")
+        assertErrorMessage(result2, "Required fields 'space' are missing")
+
+        val deploy3 = Deploy(api = "420", org = "", username = "", password = "")
+        val result3 = subject.lint(deploy3)
+        assertErrorMessage(result3, "Required fields 'password, space, username' are missing")
+
     }
 
     @Test
@@ -52,7 +57,7 @@ class DeployLinterTest {
     @Test
     fun `it fails if no manifest yml for cf when given custom path`() {
         val path = "ci/manifest.yml"
-        val deploy = Deploy( manifest = path)
+        val deploy = Deploy(manifest = path)
         given(reader.fileExists(path)).willReturn(false)
 
         val result = subject.lint(deploy)
@@ -65,14 +70,7 @@ class DeployLinterTest {
         val path = "manifest.yml"
         val deploy = Deploy(
                 api = "api",
-                username = "username",
-                password = "((super.secret))",
-                organization = "organization",
                 space = "space"
-        )
-        val manifest = Manifest(
-                org = "myOrg",
-                repo = Repo(uri = "https://github.com/simonjohansson/subject.git")
         )
 
         given(reader.fileExists(path)).willReturn(true)
@@ -84,7 +82,7 @@ class DeployLinterTest {
     @Test
     fun `Should fail if a var is lowercase`() {
         val path = "manifest.yml"
-        val deploy = Deploy( manifest = path, vars = mapOf(
+        val deploy = Deploy(manifest = path, vars = mapOf(
                 "VAR1" to "value1",
                 "VaR2" to "value2",
                 "VAR3" to "value3",

@@ -41,7 +41,7 @@ class ConcoursePipelineBuilder : IBuild {
                                 api = deploy.api,
                                 username = deploy.username,
                                 password = deploy.password,
-                                organization = deploy.organization,
+                                organization = if (deploy.org.isNotEmpty()) deploy.org else manifest.org,
                                 space = deploy.space,
                                 skip_cert_check = deploy.skip_cert_check
 

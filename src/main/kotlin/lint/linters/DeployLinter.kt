@@ -35,8 +35,6 @@ open class DeployLinter(val reader: IReader) : ILinter {
         val missingRequiredFields: ArrayList<String> = arrayListOf()
         if (deploy.api.isEmpty())
             missingRequiredFields.add("api")
-        if (deploy.organization.isEmpty())
-            missingRequiredFields.add("organization")
         if (deploy.password.isEmpty())
             missingRequiredFields.add("password")
         if (deploy.username.isEmpty())
