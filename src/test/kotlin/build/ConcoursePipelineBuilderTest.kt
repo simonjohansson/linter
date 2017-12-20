@@ -54,7 +54,7 @@ class ConcoursePipelineBuilderTest {
                         |  plan:
                         |  - get: ${manifest.getRepoName()}
                         |    trigger: true
-                        |  - task: ${(manifest.tasks[0] as Run).command}
+                        |  - task: ${(manifest.tasks[0] as Run).name()}
                         |    privileged: true
                         |    config:
                         |      platform: linux
@@ -64,7 +64,7 @@ class ConcoursePipelineBuilderTest {
                         |          repository: ${(manifest.tasks[0] as Run).image}
                         |          tag: latest
                         |      run:
-                        |        path: ./${(manifest.tasks[0] as Run).command}
+                        |        path: ./${(manifest.tasks[0] as Run).name()}
                         |        dir: ${manifest.getRepoName()}
                         |      inputs:
                         |      - name: ${manifest.getRepoName()}
@@ -102,7 +102,7 @@ class ConcoursePipelineBuilderTest {
                         |  plan:
                         |  - get: ${manifest.getRepoName()}
                         |    trigger: true
-                        |  - task: ${(manifest.tasks[0] as Run).command}
+                        |  - task: ${(manifest.tasks[0] as Run).name()}
                         |    privileged: true
                         |    config:
                         |      platform: linux
@@ -112,7 +112,7 @@ class ConcoursePipelineBuilderTest {
                         |          repository: ${(manifest.tasks[0] as Run).image}
                         |          tag: latest
                         |      run:
-                        |        path: ./${(manifest.tasks[0] as Run).command}
+                        |        path: ./${(manifest.tasks[0] as Run).name()}
                         |        dir: ${manifest.getRepoName()}
                         |      inputs:
                         |      - name: ${manifest.getRepoName()}
@@ -122,7 +122,7 @@ class ConcoursePipelineBuilderTest {
                         |  - get: ${manifest.getRepoName()}
                         |    trigger: true
                         |    passed:
-                        |    - ${(manifest.tasks[0] as Run).command}
+                        |    - ${(manifest.tasks[0] as Run).name()}
                         |  - task: ${(manifest.tasks[1] as Run).name()}
                         |    privileged: true
                         |    config:
@@ -137,14 +137,14 @@ class ConcoursePipelineBuilderTest {
                         |        dir: ${manifest.getRepoName()}
                         |      inputs:
                         |      - name: ${manifest.getRepoName()}
-                        |- name: ./other-path/build.sh
+                        |- name: ..other-path.build.sh
                         |  serial: true
                         |  plan:
                         |  - get: my-cool-repo
                         |    trigger: true
                         |    passed:
-                        |    - ci/build.sh
-                        |  - task: ./other-path/build.sh
+                        |    - ci.build.sh
+                        |  - task: ..other-path.build.sh
                         |    privileged: true
                         |    config:
                         |      platform: linux
@@ -226,7 +226,7 @@ class ConcoursePipelineBuilderTest {
                         |  - get: $repoName
                         |    trigger: true
                         |    passed:
-                        |    - ./test.sh
+                        |    - ${(manifest.tasks[0] as Run).name()}
                         |  - put: ${(manifest.tasks[1] as Deploy).name()}
                         |    params:
                         |      path: my-cool-repo
@@ -329,7 +329,7 @@ class ConcoursePipelineBuilderTest {
                         |  - get: $repoName
                         |    trigger: true
                         |    passed:
-                        |    - ./test.sh
+                        |    - ${(manifest.tasks[0] as Run).name()}
                         |  - put: ${(manifest.tasks[1] as Deploy).name()}
                         |    params:
                         |      path: my-cool-repo

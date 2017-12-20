@@ -8,7 +8,7 @@ data class Run(
         val command: String = "",
         val image: String = "",
         val vars: Map<String, String> = emptyMap()) : ITask() {
-    override fun name() = this.command
+    override fun name() = this.command.replace("/", ".")
 }
 
 data class Deploy(

@@ -158,8 +158,7 @@ class ConcoursePipelineBuilder : IBuild {
         val run = (task as Run)
         val (image, tag) = dockerImage(run.image)
         return Task(
-                task = run.command,
-
+                task = run.name(),
                 config = Config(
                         image_resource = ImageResource(
                                 source = Source(
