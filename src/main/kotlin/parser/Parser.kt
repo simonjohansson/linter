@@ -4,7 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.google.gson.Gson
 import model.manifest.*
+import org.ini4j.Wini
 import reader.IReader
+import java.io.InputStream
+import java.io.Reader
+import java.io.StringReader
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -21,10 +25,35 @@ class Parser(val reader: IReader) : IParser {
             } else {
                 val mapper = ObjectMapper(YAMLFactory())
                 val data = mapper.readValue(content, HashMap::class.java)
-                Optional.of(mapToManifest(data))
+                val manifest = mapToManifest(data)
+
+                manifest.let { manifest ->
+                    when(manifest.repo.uri.isEmpty()) {
+                        true -> Optional.of(addRepoFromGitConfigToManifest(manifest))
+                        false -> Optional.of(manifest)
+                    }
+                }
             }
         }
         false -> Optional.empty()
+    }
+
+    private fun addRepoFromGitConfigToManifest(manifest: Manifest): Manifest {
+        if(reader.fileExists(".git/config")) {
+            val gitConfig = reader.readFile(".git/config")
+            val wini = Wini(StringReader(gitConfig))
+            wini["remote \"origin\""].let { remote ->
+                remote?.get("url").let { url ->
+                    if(!url.isNullOrEmpty()) {
+                        return manifest.copy(
+                                repo = manifest.repo.copy(uri = url!!)
+                        )
+                    }
+                }
+            }
+        }
+
+        return manifest
     }
 
     private fun mapToManifest(data: HashMap<*, *>) = Manifest(

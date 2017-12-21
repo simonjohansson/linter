@@ -1,8 +1,10 @@
 package lint.linters
 
+import model.Error
 import model.Result
 import model.manifest.Deploy
 import model.manifest.Docker
+import model.manifest.Manifest
 import model.manifest.Run
 import parser.IParser
 
@@ -21,16 +23,31 @@ class Linter(
         val result = arrayListOf(requiredFilesLinter.lint())
 
         parser.parseManifest().map { manifest ->
-            result.add(requiredFieldsLinter.lint(manifest))
-            result.add(repoLinter.lint(manifest))
-            result.add(secretsLinter.lint(manifest))
-            result.add(requiredAsSecretLinter.lint(manifest))
 
-            for (task in manifest.tasks) {
-                when (task) {
-                    is Run -> result.add(runLinter.lint(task))
-                    is Deploy -> result.add(deployLinter.lint(task))
-                    is Docker -> result.add(dockerLinter.lint(task))
+            if (manifest == Manifest()) {
+                //manifest is empty..
+                result.add(
+                        Result(
+                                "Linter",
+                                listOf(model.Error(
+                                        message = "Manifest looks empty",
+                                        type = Error.Type.LINTER_ERROR,
+                                        documentation = "Todo"
+                                ))
+                        )
+                )
+            } else {
+                result.add(requiredFieldsLinter.lint(manifest))
+                result.add(repoLinter.lint(manifest))
+                result.add(secretsLinter.lint(manifest))
+                result.add(requiredAsSecretLinter.lint(manifest))
+
+                for (task in manifest.tasks) {
+                    when (task) {
+                        is Run -> result.add(runLinter.lint(task))
+                        is Deploy -> result.add(deployLinter.lint(task))
+                        is Docker -> result.add(dockerLinter.lint(task))
+                    }
                 }
             }
         }

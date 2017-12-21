@@ -5,26 +5,27 @@ import junit.framework.Assert.fail
 import model.manifest.*
 import org.junit.Before
 import org.junit.Test
-import org.mockito.BDDMockito.given
-import org.mockito.Mockito.mock
+import org.mockito.BDDMockito.*
+import org.mockito.Mockito
+import org.mockito.Mockito.*
 import reader.IReader
 
 
 class ParserTest {
-    lateinit var parser: Parser
+    lateinit var subject: Parser
     lateinit var reader: IReader
 
     @Before
     fun setup() {
         reader = mock(IReader::class.java)
-        parser = Parser(reader)
+        subject = Parser(reader)
     }
 
     @Test
     fun `when manifest doesnt exist it should return Empty`() {
         val path = ".ci.yml"
         given(reader.fileExists(path)).willReturn(false)
-        val manifest = parser.parseManifest()
+        val manifest = subject.parseManifest()
         assertThat(manifest.isPresent).isFalse()
     }
 
@@ -55,7 +56,7 @@ class ParserTest {
                               password: asd
                               repository: asd/asd
                         """)
-        val manifest = parser.parseManifest()
+        val manifest = subject.parseManifest()
         assertThat(manifest.isPresent).isTrue()
         assertThat(manifest.get()).isEqualTo(
                 Manifest(
@@ -94,11 +95,118 @@ class ParserTest {
                         """)
 
         try {
-            parser.parseManifest()
+            subject.parseManifest()
             fail("method should throw")
         } catch (e: NotImplementedError) {
             assertThat(e).hasMessageThat().isEqualTo("I don't know how to deal with task 'ThEfUcK'")
         }
+    }
+
+    @Test
+    fun `when repo uri is set it doesnt call out to filesystem to check for URI`() {
+        val path = ".ci.yml"
+        given(reader.fileExists(path)).willReturn(true)
+        given(reader.readFile(path)).willReturn("""
+                            org: myOrg
+                            repo:
+                                uri: uri
+                        """)
+
+        val manifest = subject.parseManifest()
+        assertThat(manifest.get()).isEqualTo(Manifest(org = "myOrg", repo = Repo(uri = "uri")))
+        verify(reader, Mockito.times(0)).fileExists(".git/config")
+        verify(reader, Mockito.times(0)).readFile(".git/config")
+    }
+
+    @Test
+    fun `when no repo uri is set it calls out to filesystem to check for URI`() {
+        val path = ".ci.yml"
+        given(reader.fileExists(path)).willReturn(true)
+        given(reader.fileExists(".git/config")).willReturn(true)
+        given(reader.readFile(path)).willReturn("""
+                            org: myOrg
+                        """)
+        given(reader.readFile(".git/config")).willReturn("""
+            [core]
+                repositoryformatversion = 0
+                filemode = true
+                bare = false
+                logallrefupdates = true
+                ignorecase = true
+                precomposeunicode = true
+            [remote "origin"]
+                url = git@github.com:simonjohansson/linter.git
+                fetch = +refs/heads/*:refs/remotes/origin/*
+            [branch "master"]
+                remote = origin
+                merge = refs/heads/master
+            """
+        )
+
+        val manifest = subject.parseManifest()
+        assertThat(manifest.get()).isEqualTo(Manifest(org = "myOrg", repo = Repo(uri = "git@github.com:simonjohansson/linter.git")))
+    }
+
+    @Test
+    fun `when no repo uri but private_key is set it calls out to filesystem to check for URI and keeps private_key`() {
+        val path = ".ci.yml"
+        given(reader.fileExists(path)).willReturn(true)
+        given(reader.fileExists(".git/config")).willReturn(true)
+        given(reader.readFile(path)).willReturn("""
+                            org: myOrg
+                            repo:
+                              private_key: yolo
+                        """)
+        given(reader.readFile(".git/config")).willReturn("""
+            [core]
+                repositoryformatversion = 0
+                filemode = true
+                bare = false
+                logallrefupdates = true
+                ignorecase = true
+                precomposeunicode = true
+            [remote "origin"]
+                url = git@github.com:simonjohansson/linter.git
+                fetch = +refs/heads/*:refs/remotes/origin/*
+            [branch "master"]
+                remote = origin
+                merge = refs/heads/master
+            """
+        )
+
+        val manifest = subject.parseManifest()
+        assertThat(manifest.get()).isEqualTo(Manifest(org = "myOrg", repo = Repo(
+                uri = "git@github.com:simonjohansson/linter.git",
+                private_key = "yolo"
+        )))
+    }
+
+    @Test
+    fun `when no repo uri is set and git config doesnt have a url it does nothing`() {
+        val path = ".ci.yml"
+        given(reader.fileExists(path)).willReturn(true)
+        given(reader.fileExists(".git/config")).willReturn(true)
+        given(reader.readFile(path)).willReturn("""
+                            org: myOrg
+                        """)
+        given(reader.readFile(".git/config")).willReturn("""
+            [core]
+                repositoryformatversion = 0
+                filemode = true
+                bare = false
+                logallrefupdates = true
+                ignorecase = true
+                precomposeunicode = true
+            [remote "origin"]
+                fetch = +refs/heads/*:refs/remotes/origin/*
+            [branch "master"]
+                remote = origin
+                merge = refs/heads/master
+            """
+        )
+
+        val manifest = subject.parseManifest()
+        assertThat(manifest.get()).isEqualTo(Manifest(org = "myOrg"))
     }
 
 }

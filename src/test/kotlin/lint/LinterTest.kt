@@ -1,5 +1,7 @@
 package lint
 
+import com.google.common.truth.Truth
+import com.google.common.truth.Truth.*
 import lint.linters.*
 import model.manifest.Deploy
 import model.manifest.Docker
@@ -116,5 +118,24 @@ class LinterTest {
         Mockito.verify(deployLinter).lint(manifest.tasks[2])
         Mockito.verify(dockerLinter).lint(manifest.tasks[4])
 
+    }
+
+    @Test
+    fun `When manifest is empty`() {
+        val manifest = Manifest()
+        given(parser.parseManifest()).willReturn(Optional.of(manifest))
+
+        val result = subject.lint()
+
+        Mockito.verify(requiredFilesLinter, times(1)).lint()
+        Mockito.verifyZeroInteractions(requiredFieldsLinter)
+        Mockito.verifyZeroInteractions(requiredAsSecretLinter)
+        Mockito.verifyZeroInteractions(repoLinter)
+        Mockito.verifyZeroInteractions(runLinter)
+        Mockito.verifyZeroInteractions(deployLinter)
+        Mockito.verifyZeroInteractions(dockerLinter)
+        Mockito.verifyZeroInteractions(secretsLinter)
+
+        assertThat(result.last().errors.first().message).isEqualTo("Manifest looks empty")
     }
 }
