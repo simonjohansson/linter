@@ -6,8 +6,6 @@ import com.google.gson.Gson
 import model.manifest.*
 import org.ini4j.Wini
 import reader.IReader
-import java.io.InputStream
-import java.io.Reader
 import java.io.StringReader
 import java.util.*
 import kotlin.collections.HashMap
@@ -17,9 +15,9 @@ interface IParser {
 }
 
 class Parser(val reader: IReader) : IParser {
-    override fun parseManifest() = when (reader.fileExists(".ci.yml")) {
+    override fun parseManifest() = when (reader.fileExists(".halfpipe.io")) {
         true -> {
-            val content = reader.readFile(".ci.yml")
+            val content = reader.readFile(".halfpipe.io")
             if (content.isEmpty()) {
                 Optional.of(Manifest())
             } else {
@@ -27,11 +25,9 @@ class Parser(val reader: IReader) : IParser {
                 val data = mapper.readValue(content, HashMap::class.java)
                 val manifest = mapToManifest(data)
 
-                manifest.let { manifest ->
-                    when(manifest.repo.uri.isEmpty()) {
-                        true -> Optional.of(addRepoFromGitConfigToManifest(manifest))
-                        false -> Optional.of(manifest)
-                    }
+                when (manifest.repo.uri.isEmpty()) {
+                    true -> Optional.of(addRepoFromGitConfigToManifest(manifest))
+                    false -> Optional.of(manifest)
                 }
             }
         }
@@ -39,12 +35,12 @@ class Parser(val reader: IReader) : IParser {
     }
 
     private fun addRepoFromGitConfigToManifest(manifest: Manifest): Manifest {
-        if(reader.fileExists(".git/config")) {
+        if (reader.fileExists(".git/config")) {
             val gitConfig = reader.readFile(".git/config")
             val wini = Wini(StringReader(gitConfig))
             wini["remote \"origin\""].let { remote ->
                 remote?.get("url").let { url ->
-                    if(!url.isNullOrEmpty()) {
+                    if (!url.isNullOrEmpty()) {
                         return manifest.copy(
                                 repo = manifest.repo.copy(uri = url!!)
                         )
@@ -57,12 +53,12 @@ class Parser(val reader: IReader) : IParser {
     }
 
     private fun mapToManifest(data: HashMap<*, *>) = Manifest(
-            org = getOrg(data),
+            team = getTeam(data),
             repo = getRepo(data),
             tasks = getTasks(data))
 
-    private fun getOrg(data: HashMap<*, *>) = if ("org" in data) {
-        data["org"] as String
+    private fun getTeam(data: HashMap<*, *>) = if ("team" in data) {
+        data["team"] as String
     } else ""
 
     private fun getRepo(data: HashMap<*, *>) = if ("repo" in data) {

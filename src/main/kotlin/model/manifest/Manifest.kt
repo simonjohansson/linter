@@ -5,10 +5,10 @@ sealed class ITask {
 }
 
 data class Run(
-        val command: String = "",
+        val script: String = "",
         val image: String = "",
         val vars: Map<String, String> = emptyMap()) : ITask() {
-    override fun name() = this.command.replace("/", ".")
+    override fun name() = this.script.replace("/", ".")
 }
 
 data class Deploy(
@@ -35,7 +35,7 @@ data class Docker(
 data class Repo(val uri: String = "", val private_key: String = "")
 
 data class Manifest(
-        val org: String = "",
+        val team: String = "",
         val repo: Repo = Repo(),
         val tasks: List<ITask> = listOf()
 ) {

@@ -35,7 +35,7 @@ class RunLinterTest {
         val result = subject.lint(task)
 
         assertThat(result.errors).hasSize(2)
-        assertErrorMessage(result, "You must specify a command")
+        assertErrorMessage(result, "You must specify a script")
         assertErrorMessage(result, "You must specify a image")
     }
 
@@ -45,7 +45,7 @@ class RunLinterTest {
         val result = subject.lint(task)
 
         assertThat(result.errors).hasSize(1)
-        assertErrorMessage(result, "You must specify a command")
+        assertErrorMessage(result, "You must specify a script")
     }
 
     @Test
@@ -54,7 +54,7 @@ class RunLinterTest {
 
         BDDMockito.given(reader.fileExists(file)).willReturn(false)
 
-        val task = Run(command = file, image = "jklsafdjkl")
+        val task = Run(script = file, image = "jklsafdjkl")
         val result = subject.lint(task)
 
         assertThat(result.errors).hasSize(1)
@@ -68,7 +68,7 @@ class RunLinterTest {
         BDDMockito.given(reader.fileExists(file)).willReturn(true)
         BDDMockito.given(reader.fileExecutable(file)).willReturn(false)
 
-        val task = Run(command = file, image = "asdf")
+        val task = Run(script = file, image = "asdf")
         val result = subject.lint(task)
 
         assertThat(result.errors).hasSize(1)
@@ -79,7 +79,7 @@ class RunLinterTest {
     fun `it fails if test is specified and different path but no file found`() {
         BDDMockito.given(reader.fileExists("ci/test.sh")).willReturn(false)
 
-        val task = Run(command = "ci/test.sh")
+        val task = Run(script = "ci/test.sh")
         val result = subject.lint(task)
 
         assertErrorMessage(result, "File 'ci/test.sh' is not found")
@@ -90,7 +90,7 @@ class RunLinterTest {
         BDDMockito.given(reader.fileExists("ci/test.sh")).willReturn(true)
         BDDMockito.given(reader.fileExecutable("ci/test.sh")).willReturn(false)
 
-        val task = Run(command = "ci/test.sh")
+        val task = Run(script = "ci/test.sh")
         val result = subject.lint(task)
 
         assertErrorMessage(result, "File 'ci/test.sh' is not executable")
@@ -101,7 +101,7 @@ class RunLinterTest {
         BDDMockito.given(reader.fileExists("test.sh")).willReturn(true)
         BDDMockito.given(reader.fileExecutable("test.sh")).willReturn(true)
 
-        val task = Run(command = "test.sh")
+        val task = Run(script = "test.sh")
         val result = subject.lint(task)
 
         assertThat(result.errors).hasSize(1)
@@ -113,7 +113,7 @@ class RunLinterTest {
         BDDMockito.given(reader.fileExists("test.sh")).willReturn(true)
         BDDMockito.given(reader.fileExecutable("test.sh")).willReturn(true)
 
-        val task = Run(command = "test.sh", image = "lkjasdf")
+        val task = Run(script = "test.sh", image = "lkjasdf")
         val result = subject.lint(task)
 
         Truth.assertThat(result).isEqualTo(Result(linter = subject.name()))

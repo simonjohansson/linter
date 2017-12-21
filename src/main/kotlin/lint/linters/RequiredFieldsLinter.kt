@@ -17,9 +17,9 @@ open class RequiredFieldsLinter() : ILinter {
     override fun lint(manifest: Manifest): Result {
         val errors: ArrayList<Error> = arrayListOf()
 
-        if (manifest.org.isEmpty()) {
+        if (manifest.team.isEmpty()) {
             errors.add(model.Error(
-                    message = "Required top level field 'org' missing",
+                    message = "Required top level field 'team' missing",
                     type = Error.Type.MISSING_FIELD,
                     documentation = "https://github.com/simonjohansson/linter/wiki/Required-Fields#missing_field-org"
             ))

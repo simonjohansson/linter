@@ -7,13 +7,14 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito.*
 import org.mockito.Mockito
-import org.mockito.Mockito.*
 import reader.IReader
 
 
 class ParserTest {
     lateinit var subject: Parser
     lateinit var reader: IReader
+
+    val path = ".halfpipe.io"
 
     @Before
     fun setup() {
@@ -23,7 +24,6 @@ class ParserTest {
 
     @Test
     fun `when manifest doesnt exist it should return Empty`() {
-        val path = ".ci.yml"
         given(reader.fileExists(path)).willReturn(false)
         val manifest = subject.parseManifest()
         assertThat(manifest.isPresent).isFalse()
@@ -31,10 +31,9 @@ class ParserTest {
 
     @Test
     fun `when manifest exist it should return it`() {
-        val path = ".ci.yml"
         given(reader.fileExists(path)).willReturn(true)
         given(reader.readFile(path)).willReturn("""
-                        org: yolo
+                        team: yolo
                         repo:
                           uri: asd
                           private_key: |
@@ -42,9 +41,9 @@ class ParserTest {
                             SO PRIVATE
                         tasks:
                             - task: run
-                              command: test.sh
+                              script: test.sh
                             - task: run
-                              command: build.sh
+                              script: build.sh
                             - task: deploy
                               env: live
                               vars:
@@ -60,11 +59,11 @@ class ParserTest {
         assertThat(manifest.isPresent).isTrue()
         assertThat(manifest.get()).isEqualTo(
                 Manifest(
-                        org = "yolo",
+                        team = "yolo",
                         repo = Repo("asd", "I AM\nSO PRIVATE\n"),
                         tasks = listOf(
-                                Run(command = "test.sh"),
-                                Run(command = "build.sh"),
+                                Run(script = "test.sh"),
+                                Run(script = "build.sh"),
                                 Deploy(
                                         vars = mapOf(
                                                 "name" to "value",
@@ -83,10 +82,9 @@ class ParserTest {
 
     @Test
     fun `when manifest have a bad task it should throw`() {
-        val path = ".ci.yml"
         given(reader.fileExists(path)).willReturn(true)
         given(reader.readFile(path)).willReturn("""
-                        org: yolo
+                        team: yolo
                         tasks:
                             - task: run
                               command: build.sh
@@ -104,27 +102,25 @@ class ParserTest {
 
     @Test
     fun `when repo uri is set it doesnt call out to filesystem to check for URI`() {
-        val path = ".ci.yml"
         given(reader.fileExists(path)).willReturn(true)
         given(reader.readFile(path)).willReturn("""
-                            org: myOrg
+                            team: myOrg
                             repo:
                                 uri: uri
                         """)
 
         val manifest = subject.parseManifest()
-        assertThat(manifest.get()).isEqualTo(Manifest(org = "myOrg", repo = Repo(uri = "uri")))
+        assertThat(manifest.get()).isEqualTo(Manifest(team = "myOrg", repo = Repo(uri = "uri")))
         verify(reader, Mockito.times(0)).fileExists(".git/config")
         verify(reader, Mockito.times(0)).readFile(".git/config")
     }
 
     @Test
     fun `when no repo uri is set it calls out to filesystem to check for URI`() {
-        val path = ".ci.yml"
         given(reader.fileExists(path)).willReturn(true)
         given(reader.fileExists(".git/config")).willReturn(true)
         given(reader.readFile(path)).willReturn("""
-                            org: myOrg
+                            team: myOrg
                         """)
         given(reader.readFile(".git/config")).willReturn("""
             [core]
@@ -144,16 +140,15 @@ class ParserTest {
         )
 
         val manifest = subject.parseManifest()
-        assertThat(manifest.get()).isEqualTo(Manifest(org = "myOrg", repo = Repo(uri = "git@github.com:simonjohansson/linter.git")))
+        assertThat(manifest.get()).isEqualTo(Manifest(team = "myOrg", repo = Repo(uri = "git@github.com:simonjohansson/linter.git")))
     }
 
     @Test
     fun `when no repo uri but private_key is set it calls out to filesystem to check for URI and keeps private_key`() {
-        val path = ".ci.yml"
         given(reader.fileExists(path)).willReturn(true)
         given(reader.fileExists(".git/config")).willReturn(true)
         given(reader.readFile(path)).willReturn("""
-                            org: myOrg
+                            team: myOrg
                             repo:
                               private_key: yolo
                         """)
@@ -175,7 +170,7 @@ class ParserTest {
         )
 
         val manifest = subject.parseManifest()
-        assertThat(manifest.get()).isEqualTo(Manifest(org = "myOrg", repo = Repo(
+        assertThat(manifest.get()).isEqualTo(Manifest(team = "myOrg", repo = Repo(
                 uri = "git@github.com:simonjohansson/linter.git",
                 private_key = "yolo"
         )))
@@ -183,11 +178,10 @@ class ParserTest {
 
     @Test
     fun `when no repo uri is set and git config doesnt have a url it does nothing`() {
-        val path = ".ci.yml"
         given(reader.fileExists(path)).willReturn(true)
         given(reader.fileExists(".git/config")).willReturn(true)
         given(reader.readFile(path)).willReturn("""
-                            org: myOrg
+                            team: myOrg
                         """)
         given(reader.readFile(".git/config")).willReturn("""
             [core]
@@ -206,7 +200,7 @@ class ParserTest {
         )
 
         val manifest = subject.parseManifest()
-        assertThat(manifest.get()).isEqualTo(Manifest(org = "myOrg"))
+        assertThat(manifest.get()).isEqualTo(Manifest(team = "myOrg"))
     }
 
 }

@@ -23,11 +23,20 @@ class RequiredFilesLinterTest {
     }
 
     @Test
-    fun `it fails if ci file is missing`() {
-        given(reader.fileExists(".ci.yml")).willReturn(false)
+    fun `it fails if halfpipe file is missing`() {
+        given(reader.fileExists(".halfpipe.io")).willReturn(false)
 
         val linter = RequiredFilesLinter(reader)
         val result = linter.lint()
-        assertErrorMessage(result, "'.ci.yml' file is missing")
+        assertErrorMessage(result, "'.halfpipe.io' file is missing")
+    }
+
+    @Test
+    fun `it does nit fails if halfpipe file is missing`() {
+        given(reader.fileExists(".halfpipe.io")).willReturn(false)
+
+        val linter = RequiredFilesLinter(reader)
+        val result = linter.lint()
+        assertErrorMessage(result, "'.halfpipe.io' file is missing")
     }
 }

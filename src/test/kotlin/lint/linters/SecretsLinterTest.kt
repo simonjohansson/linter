@@ -24,7 +24,7 @@ class SecretsLinterTest {
     fun `When there are no secrets, there are no errors`() {
         // Deploy defaults to using secrets for username and password
         val manifest = Manifest(
-                org = "test",
+                team = "test",
                 tasks = listOf(
                         Run(),
                         Docker()
@@ -52,14 +52,14 @@ class SecretsLinterTest {
         val missingValue2 = "((good.value))"
 
         val manifest = Manifest(
-                org = "simon",
+                team = "simon",
                 repo = Repo(
                         uri = "git@github.com:simonjohansson/subject.git",
                         private_key = badValue1
                 ),
                 tasks = listOf(
                         Run(
-                                command = "command",
+                                script = "command",
                                 image = "image",
                                 vars = mapOf(
                                         "A" to "B",
@@ -88,12 +88,12 @@ class SecretsLinterTest {
         )
 
         given(secrets.haveToken()).willReturn(true)
-        given(secrets.exists(manifest.org, manifest.getRepoName(), goodValue1)).willReturn(true)
-        given(secrets.exists(manifest.org, manifest.getRepoName(), goodValue2)).willReturn(true)
-        given(secrets.exists(manifest.org, manifest.getRepoName(), missingValue1)).willReturn(false)
-        given(secrets.exists(manifest.org, manifest.getRepoName(), missingValue2)).willReturn(false)
-        given(secrets.exists(manifest.org, manifest.getRepoName(), "((cf-credentials.username))")).willReturn(true)
-        given(secrets.exists(manifest.org, manifest.getRepoName(), "((cf-credentials.password))")).willReturn(true)
+        given(secrets.exists(manifest.team, manifest.getRepoName(), goodValue1)).willReturn(true)
+        given(secrets.exists(manifest.team, manifest.getRepoName(), goodValue2)).willReturn(true)
+        given(secrets.exists(manifest.team, manifest.getRepoName(), missingValue1)).willReturn(false)
+        given(secrets.exists(manifest.team, manifest.getRepoName(), missingValue2)).willReturn(false)
+        given(secrets.exists(manifest.team, manifest.getRepoName(), "((cf-credentials.username))")).willReturn(true)
+        given(secrets.exists(manifest.team, manifest.getRepoName(), "((cf-credentials.password))")).willReturn(true)
 
 
         val result = subject.lint(manifest)
@@ -112,7 +112,7 @@ class SecretsLinterTest {
     @Test
     fun `Error if there are secrets but no token for the linter`() {
         val manifest = Manifest(
-                org = "((its.secret))",
+                team = "((its.secret))",
                 repo = Repo(
                         uri = "git@github.com:simonjohansson/subject.git"
                 )

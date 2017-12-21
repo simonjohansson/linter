@@ -45,7 +45,7 @@ open class SecretsLinter(val secrets: ISecrets) : ILinter {
         val (map, value) = key.split(".")
 
 
-        val message = "Cannot resolve '$value' in '/${secrets.prefix()}/${manifest.org}/${manifest.getRepoName()}/$map' or '/${secrets.prefix()}/${manifest.org}/$map'"
+        val message = "Cannot resolve '$value' in '/${secrets.prefix()}/${manifest.team}/${manifest.getRepoName()}/$map' or '/${secrets.prefix()}/${manifest.team}/$map'"
         return model.Error(
                 message = message,
                 type = model.Error.Type.BAD_VALUE,
@@ -65,7 +65,7 @@ open class SecretsLinter(val secrets: ISecrets) : ILinter {
     private fun missingKeys(secretsValues: List<String>, manifest: Manifest) =
             secretsValues
                     .filter { isSecret(it) && this.secrets.haveToken() }
-                    .filter { !secrets.exists(manifest.org, manifest.getRepoName(), it) }
+                    .filter { !secrets.exists(manifest.team, manifest.getRepoName(), it) }
                     .map { secretNotFoundError(it, manifest) }
 
     private fun missingToken(secretsValues: List<String>): List<model.Error> {

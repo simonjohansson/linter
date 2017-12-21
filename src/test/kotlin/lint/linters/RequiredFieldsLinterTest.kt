@@ -16,17 +16,17 @@ class RequiredFieldsLinterTest {
     }
 
     @Test
-    fun `error if no org`() {
+    fun `error if no team`() {
         val manifest = Manifest()
         val linter = RequiredFieldsLinter()
         val result = linter.lint(manifest)
 
-        assertErrorMessage(result, "Required top level field 'org' missing")
+        assertErrorMessage(result, "Required top level field 'team' missing")
     }
 
     @Test
     fun `error if no tasks`() {
-        val manifest = Manifest(org = "yolo")
+        val manifest = Manifest(team = "yolo")
         val linter = RequiredFieldsLinter()
         val result = linter.lint(manifest)
 
@@ -45,7 +45,7 @@ class RequiredFieldsLinterTest {
     @Test
     fun `no errors if all is ok`() {
         val manifest = Manifest(
-                org = "yolo",
+                team = "yolo",
                 repo = Repo("git@..."),
                 tasks = listOf(Run()))
 

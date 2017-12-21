@@ -41,7 +41,7 @@ class ConcoursePipelineBuilder : IBuild {
                                 api = deploy.api,
                                 username = deploy.username,
                                 password = deploy.password,
-                                organization = if (deploy.org.isNotEmpty()) deploy.org else manifest.org,
+                                organization = if (deploy.org.isNotEmpty()) deploy.org else manifest.team,
                                 space = deploy.space,
                                 skip_cert_check = deploy.skip_cert_check
 
@@ -167,7 +167,7 @@ class ConcoursePipelineBuilder : IBuild {
                         ),
                         params = run.vars,
                         run = model.pipeline.Run(
-                                path = makeCorrectPath(run.command),
+                                path = makeCorrectPath(run.script),
                                 dir = repoName
                         ),
                         inputs = listOf(Input(repoName))

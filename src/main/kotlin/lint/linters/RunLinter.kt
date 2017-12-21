@@ -42,27 +42,27 @@ open class RunLinter(private val reader: IReader) : ILinter {
     private fun commandLinter(runTask: Run): ArrayList<Error> {
         val errors: ArrayList<Error> = arrayListOf()
 
-        if (runTask.command.isBlank()) {
+        if (runTask.script.isBlank()) {
             errors.add(Error(
-                    message = "You must specify a command",
+                    message = "You must specify a script",
                     type = Error.Type.MISSING_FIELD,
                     documentation = "https://github.com/simonjohansson/linter/wiki/Run#missing_field-command"
             ))
         } else {
-            val fileExists = this.reader.fileExists(runTask.command)
+            val fileExists = this.reader.fileExists(runTask.script)
             if (!fileExists) {
                 errors.add(Error(
-                        "File '${runTask.command}' is not found",
+                        "File '${runTask.script}' is not found",
                         Error.Type.MISSING_FILE,
                         documentation = "https://github.com/simonjohansson/linter/wiki/Run#missing_file"
                 ))
 
             } else {
 
-                val fileExecutable = this.reader.fileExecutable(runTask.command)
+                val fileExecutable = this.reader.fileExecutable(runTask.script)
                 if (!fileExecutable) {
                     errors.add(Error(
-                            "File '${runTask.command}' is not executable",
+                            "File '${runTask.script}' is not executable",
                             Error.Type.NOT_EXECUTABLE,
                             documentation = "https://github.com/simonjohansson/linter/wiki/Run#not_executable"
                     ))

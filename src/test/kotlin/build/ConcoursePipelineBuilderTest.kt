@@ -39,7 +39,7 @@ class ConcoursePipelineBuilderTest {
         val uri = "https://github.com/org/$repoName.git"
         val manifest = Manifest(
                 repo = Repo(uri),
-                tasks = listOf(Run(command = "test.sh", image = "yolo"))
+                tasks = listOf(Run(script = "test.sh", image = "yolo"))
         )
 
         val wanted = """|---
@@ -84,9 +84,9 @@ class ConcoursePipelineBuilderTest {
         val manifest = Manifest(
                 repo = Repo(uri),
                 tasks = listOf(
-                        Run(command = "test.sh", image = "yolo"),
-                        Run(command = "ci/build.sh", image = "kehe"),
-                        Run(command = "./other-path/build.sh", image = "kehe", vars = mapOf("KEY" to "value"))
+                        Run(script = "test.sh", image = "yolo"),
+                        Run(script = "ci/build.sh", image = "kehe"),
+                        Run(script = "./other-path/build.sh", image = "kehe", vars = mapOf("KEY" to "value"))
                 )
         )
 
@@ -133,7 +133,7 @@ class ConcoursePipelineBuilderTest {
                         |          repository: ${(manifest.tasks[1] as Run).image}
                         |          tag: latest
                         |      run:
-                        |        path: ./${(manifest.tasks[1] as Run).command}
+                        |        path: ./${(manifest.tasks[1] as Run).script}
                         |        dir: ${manifest.getRepoName()}
                         |      inputs:
                         |      - name: ${manifest.getRepoName()}
@@ -174,7 +174,7 @@ class ConcoursePipelineBuilderTest {
 
         val manifest = Manifest(
                 repo = Repo(uri),
-                org = "myOrg",
+                team = "myOrg",
                 tasks = listOf(
                         Run("./test.sh", "busybox:yolo"),
                         Deploy(
@@ -197,7 +197,7 @@ class ConcoursePipelineBuilderTest {
                         |    api: ${(manifest.tasks.last() as Deploy).api}
                         |    username: ${(manifest.tasks.last() as Deploy).username}
                         |    password: ${(manifest.tasks.last() as Deploy).password}
-                        |    organization: ${manifest.org}
+                        |    organization: ${manifest.team}
                         |    space: ${(manifest.tasks.last() as Deploy).space}
                         |    skip_cert_check: false
                         |jobs:
@@ -216,7 +216,7 @@ class ConcoursePipelineBuilderTest {
                         |          repository: busybox
                         |          tag: yolo
                         |      run:
-                        |        path: ${(manifest.tasks[0] as Run).command}
+                        |        path: ${(manifest.tasks[0] as Run).script}
                         |        dir: ${manifest.getRepoName()}
                         |      inputs:
                         |      - name: ${manifest.getRepoName()}
@@ -262,7 +262,7 @@ class ConcoursePipelineBuilderTest {
 
         val manifest = Manifest(
                 repo = Repo(uri),
-                org = "myOrg",
+                team = "myOrg",
                 tasks = listOf(
                         Run("./test.sh", "busybox"),
                         deploy1,
@@ -285,7 +285,7 @@ class ConcoursePipelineBuilderTest {
                         |    api: ${(manifest.tasks[1] as Deploy).api}
                         |    username: ${(manifest.tasks[1] as Deploy).username}
                         |    password: ${(manifest.tasks[1] as Deploy).password}
-                        |    organization: ${manifest.org}
+                        |    organization: ${manifest.team}
                         |    space: ${(manifest.tasks[1] as Deploy).space}
                         |    skip_cert_check: false
                         |- name: ${(manifest.tasks[3] as Deploy).name()}
@@ -294,7 +294,7 @@ class ConcoursePipelineBuilderTest {
                         |    api: ${(manifest.tasks[3] as Deploy).api}
                         |    username: ${(manifest.tasks[3] as Deploy).username}
                         |    password: ${(manifest.tasks[3] as Deploy).password}
-                        |    organization: ${manifest.org}
+                        |    organization: ${manifest.team}
                         |    space: ${(manifest.tasks[3] as Deploy).space}
                         |    skip_cert_check: false
                         |- name: docker-push
@@ -319,7 +319,7 @@ class ConcoursePipelineBuilderTest {
                         |          repository: ${(manifest.tasks[0] as Run).image}
                         |          tag: latest
                         |      run:
-                        |        path: ${(manifest.tasks[0] as Run).command}
+                        |        path: ${(manifest.tasks[0] as Run).script}
                         |        dir: ${manifest.getRepoName()}
                         |      inputs:
                         |      - name: ${manifest.getRepoName()}
@@ -351,7 +351,7 @@ class ConcoursePipelineBuilderTest {
                         |          repository: ${(manifest.tasks[0] as Run).image}
                         |          tag: latest
                         |      run:
-                        |        path: ${(manifest.tasks[2] as Run).command}
+                        |        path: ${(manifest.tasks[2] as Run).script}
                         |        dir: ${manifest.getRepoName()}
                         |      inputs:
                         |      - name: ${manifest.getRepoName()}
