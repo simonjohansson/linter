@@ -30,13 +30,6 @@ data class Task(val task: String = "", val privileged: Boolean = true, val confi
 sealed class IPutParams
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-data class CFParams(
-        val path: String = "",
-        val manifest: String = "manifest.yml",
-        val environment_variables: Map<String, String> = emptyMap()
-) : IPutParams()
-
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class DockerParams(
         val build: String = ""
 ) : IPutParams()

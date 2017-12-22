@@ -203,15 +203,6 @@ class ConcoursePipelineBuilderTest {
             |  type: git
             |  source:
             |    uri: https://github.com/org/my-cool-repo.git
-            |- name: deploy-space
-            |  type: cf
-            |  source:
-            |    api: api
-            |    username: ((cf-credentials.username))
-            |    password: ((cf-credentials.password))
-            |    organization: myOrg
-            |    space: space
-            |    skip_cert_check: false
             |jobs:
             |- name: ..test.sh
             |  serial: true
@@ -242,10 +233,30 @@ class ConcoursePipelineBuilderTest {
             |    trigger: true
             |    passed:
             |    - ..test.sh
-            |  - put: deploy-space
-            |    params:
-            |      path: my-cool-repo
-            |      manifest: my-cool-repo/ci/manifest.yml
+            |  - task: 'Deploy to myOrg: space'
+            |    privileged: true
+            |    config:
+            |      platform: linux
+            |      image_resource:
+            |        type: docker-image
+            |        source:
+            |          repository: simonjohansson/cf-push
+            |          tag: latest
+            |      params:
+            |        API: api
+            |        USERNAME: ((cf-credentials.username))
+            |        PASSWORD: ((cf-credentials.password))
+            |        ORG: myOrg
+            |        SPACE: space
+            |        MANIFEST_PATH: ci/manifest.yml
+            |      run:
+            |        path: /bin/sh
+            |        args:
+            |        - -exc
+            |        - cf-push
+            |        dir: my-cool-repo
+            |      inputs:
+            |      - name: my-cool-repo
             |
                         """.trimMargin()
 
@@ -295,24 +306,6 @@ class ConcoursePipelineBuilderTest {
             |  type: git
             |  source:
             |    uri: https://github.com/org/my-cool-repo.git
-            |- name: deploy-space1
-            |  type: cf
-            |  source:
-            |    api: api1
-            |    username: ((cf-credentials.username))
-            |    password: ((cf-credentials.password))
-            |    organization: myOrg
-            |    space: space1
-            |    skip_cert_check: false
-            |- name: deploy-space2
-            |  type: cf
-            |  source:
-            |    api: api2
-            |    username: ((cf-credentials.username))
-            |    password: ((cf-credentials.password))
-            |    organization: myOrg
-            |    space: space2
-            |    skip_cert_check: false
             |- name: docker-push
             |  type: docker-image
             |  source:
@@ -349,10 +342,30 @@ class ConcoursePipelineBuilderTest {
             |    trigger: true
             |    passed:
             |    - ..test.sh
-            |  - put: deploy-space1
-            |    params:
-            |      path: my-cool-repo
-            |      manifest: my-cool-repo/manifest.yml
+            |  - task: 'Deploy to myOrg: space1'
+            |    privileged: true
+            |    config:
+            |      platform: linux
+            |      image_resource:
+            |        type: docker-image
+            |        source:
+            |          repository: simonjohansson/cf-push
+            |          tag: latest
+            |      params:
+            |        API: api1
+            |        USERNAME: ((cf-credentials.username))
+            |        PASSWORD: ((cf-credentials.password))
+            |        ORG: myOrg
+            |        SPACE: space1
+            |        MANIFEST_PATH: manifest.yml
+            |      run:
+            |        path: /bin/sh
+            |        args:
+            |        - -exc
+            |        - cf-push
+            |        dir: my-cool-repo
+            |      inputs:
+            |      - name: my-cool-repo
             |- name: ..integration-tests.sh
             |  serial: true
             |  plan:
@@ -384,12 +397,31 @@ class ConcoursePipelineBuilderTest {
             |    trigger: true
             |    passed:
             |    - ..integration-tests.sh
-            |  - put: deploy-space2
-            |    params:
-            |      path: my-cool-repo
-            |      manifest: my-cool-repo/manifest.yml
-            |      environment_variables:
+            |  - task: 'Deploy to myOrg: space2'
+            |    privileged: true
+            |    config:
+            |      platform: linux
+            |      image_resource:
+            |        type: docker-image
+            |        source:
+            |          repository: simonjohansson/cf-push
+            |          tag: latest
+            |      params:
             |        SIMON: Johansson
+            |        API: api2
+            |        USERNAME: ((cf-credentials.username))
+            |        PASSWORD: ((cf-credentials.password))
+            |        ORG: myOrg
+            |        SPACE: space2
+            |        MANIFEST_PATH: manifest.yml
+            |      run:
+            |        path: /bin/sh
+            |        args:
+            |        - -exc
+            |        - cf-push
+            |        dir: my-cool-repo
+            |      inputs:
+            |      - name: my-cool-repo
             |- name: docker-push
             |  serial: true
             |  plan:

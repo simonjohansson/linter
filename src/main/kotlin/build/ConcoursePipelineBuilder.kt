@@ -16,7 +16,7 @@ class ConcoursePipelineBuilder : IBuild {
             pipeline = pipeline.copy(resources = resources(manifest))
 
             if (manifest.tasks.isNotEmpty())
-                pipeline = pipeline.copy(jobs = jobs(manifest.tasks, manifest.getRepoName()))
+                pipeline = pipeline.copy(jobs = jobs(manifest))
 
         }
         return pipeline.toYAML()
@@ -33,22 +33,6 @@ class ConcoursePipelineBuilder : IBuild {
         )
     }
 
-    private fun deployResources(manifest: Manifest) =
-            manifest.tasks.filter { it is Deploy }
-                    .map {
-                        val deploy = it as Deploy
-                        Resource(deploy.name(), "cf", CFSource(
-                                api = deploy.api,
-                                username = deploy.username,
-                                password = deploy.password,
-                                organization = if (deploy.org.isNotEmpty()) deploy.org else manifest.team,
-                                space = deploy.space,
-                                skip_cert_check = deploy.skip_cert_check
-
-                        ))
-                    }
-
-
     private fun dockerResource(manifest: Manifest) =
             manifest.tasks.filter { it is Docker }
                     .map {
@@ -63,14 +47,14 @@ class ConcoursePipelineBuilder : IBuild {
     private fun resources(manifest: Manifest): List<Resource> {
         return emptyList<Resource>() +
                 gitResource(manifest) +
-                deployResources(manifest) +
                 dockerResource(manifest)
     }
 
-    private fun jobs(tasks: List<ITask>, repoName: String): List<Job> {
+    private fun jobs(manifest: Manifest): List<Job> {
         val taskList = arrayListOf<ITask>(Run())
-        taskList.addAll(tasks)
+        taskList.addAll(manifest.tasks)
 
+        val repoName = manifest.getRepoName()
         return taskList.zip(taskList.drop(1)).map { (lastTask, currentTask) ->
             when (currentTask) {
                 is Run -> {
@@ -83,11 +67,12 @@ class ConcoursePipelineBuilder : IBuild {
                     )
                 }
                 is Deploy -> {
+                    val org = if (currentTask.org.isNotEmpty()) currentTask.org else manifest.team
                     Job(
                             name = currentTask.name(),
                             plan = listOf(
                                     getPlan(lastTask, repoName),
-                                    deployPlan(currentTask, repoName)
+                                    deployPlan(currentTask, manifest)
                             )
                     )
                 }
@@ -113,13 +98,35 @@ class ConcoursePipelineBuilder : IBuild {
         )
     }
 
-    private fun deployPlan(task: Deploy, repoName: String): Put {
-        return Put(
-                put = task.name(),
-                params = CFParams(
-                        path = repoName,
-                        manifest = "$repoName/${task.manifest}",
-                        environment_variables = task.vars
+    private fun deployPlan(task: Deploy, manifest: Manifest): Task {
+        val repoName = manifest.getRepoName()
+        val org = if (task.org.isNotEmpty()) task.org else manifest.team
+        val params = task.vars +
+                ("API" to task.api) +
+                ("USERNAME" to task.username) +
+                ("PASSWORD" to task.password) +
+                ("ORG" to org) +
+                ("SPACE" to task.space) +
+                ("MANIFEST_PATH" to task.manifest)
+
+        return Task(
+                task = "Deploy to $org: ${task.space}",
+                config = Config(
+                        image_resource = ImageResource(
+                                source = Source(
+                                        repository = "simonjohansson/cf-push",
+                                        tag = "latest")
+                        ),
+                        params = params,
+                        run = model.pipeline.Run(
+                                path = "/bin/sh",
+                                args = listOf(
+                                        "-exc",
+                                        "/bin/cf-push"
+                                ),
+                                dir = repoName
+                        ),
+                        inputs = listOf(Input(repoName))
                 )
         )
     }
