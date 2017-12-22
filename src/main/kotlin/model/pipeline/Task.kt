@@ -10,7 +10,12 @@ data class Source(
         val tag: String = ""
 )
 data class ImageResource(val type: String = "docker-image", val source: Source = Source())
-data class Run(val path: String = "", val dir: String = "")
+
+data class Run(
+        val path: String = "",
+        val args: List<String> = emptyList(),
+        val dir: String = "")
+
 data class Input(val name: String = "")
 data class Config(
         val platform: String = "linux",

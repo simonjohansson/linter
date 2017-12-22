@@ -64,7 +64,10 @@ class ConcoursePipelineBuilderTest {
                         |          repository: ${(manifest.tasks[0] as Run).image}
                         |          tag: latest
                         |      run:
-                        |        path: ./${(manifest.tasks[0] as Run).name()}
+                        |        path: /bin/sh
+                        |        args:
+                        |        - -exc
+                        |        - ./${(manifest.tasks[0] as Run).name()}
                         |        dir: ${manifest.getRepoName()}
                         |      inputs:
                         |      - name: ${manifest.getRepoName()}
@@ -91,76 +94,85 @@ class ConcoursePipelineBuilderTest {
         )
 
         val wanted = """|---
-                        |resources:
-                        |- name: $repoName
-                        |  type: git
-                        |  source:
-                        |    uri: $uri
-                        |jobs:
-                        |- name: ${(manifest.tasks[0] as Run).name()}
-                        |  serial: true
-                        |  plan:
-                        |  - get: ${manifest.getRepoName()}
-                        |    trigger: true
-                        |  - task: ${(manifest.tasks[0] as Run).name()}
-                        |    privileged: true
-                        |    config:
-                        |      platform: linux
-                        |      image_resource:
-                        |        type: docker-image
-                        |        source:
-                        |          repository: ${(manifest.tasks[0] as Run).image}
-                        |          tag: latest
-                        |      run:
-                        |        path: ./${(manifest.tasks[0] as Run).name()}
-                        |        dir: ${manifest.getRepoName()}
-                        |      inputs:
-                        |      - name: ${manifest.getRepoName()}
-                        |- name: ${(manifest.tasks[1] as Run).name()}
-                        |  serial: true
-                        |  plan:
-                        |  - get: ${manifest.getRepoName()}
-                        |    trigger: true
-                        |    passed:
-                        |    - ${(manifest.tasks[0] as Run).name()}
-                        |  - task: ${(manifest.tasks[1] as Run).name()}
-                        |    privileged: true
-                        |    config:
-                        |      platform: linux
-                        |      image_resource:
-                        |        type: docker-image
-                        |        source:
-                        |          repository: ${(manifest.tasks[1] as Run).image}
-                        |          tag: latest
-                        |      run:
-                        |        path: ./${(manifest.tasks[1] as Run).script}
-                        |        dir: ${manifest.getRepoName()}
-                        |      inputs:
-                        |      - name: ${manifest.getRepoName()}
-                        |- name: ..other-path.build.sh
-                        |  serial: true
-                        |  plan:
-                        |  - get: my-cool-repo
-                        |    trigger: true
-                        |    passed:
-                        |    - ci.build.sh
-                        |  - task: ..other-path.build.sh
-                        |    privileged: true
-                        |    config:
-                        |      platform: linux
-                        |      image_resource:
-                        |        type: docker-image
-                        |        source:
-                        |          repository: kehe
-                        |          tag: latest
-                        |      params:
-                        |        KEY: value
-                        |      run:
-                        |        path: ./other-path/build.sh
-                        |        dir: my-cool-repo
-                        |      inputs:
-                        |      - name: my-cool-repo
-                        |
+            |resources:
+            |- name: my-cool-repo
+            |  type: git
+            |  source:
+            |    uri: https://github.com/org/my-cool-repo.git
+            |jobs:
+            |- name: test.sh
+            |  serial: true
+            |  plan:
+            |  - get: my-cool-repo
+            |    trigger: true
+            |  - task: test.sh
+            |    privileged: true
+            |    config:
+            |      platform: linux
+            |      image_resource:
+            |        type: docker-image
+            |        source:
+            |          repository: yolo
+            |          tag: latest
+            |      run:
+            |        path: /bin/sh
+            |        args:
+            |        - -exc
+            |        - ./test.sh
+            |        dir: my-cool-repo
+            |      inputs:
+            |      - name: my-cool-repo
+            |- name: ci.build.sh
+            |  serial: true
+            |  plan:
+            |  - get: my-cool-repo
+            |    trigger: true
+            |    passed:
+            |    - test.sh
+            |  - task: ci.build.sh
+            |    privileged: true
+            |    config:
+            |      platform: linux
+            |      image_resource:
+            |        type: docker-image
+            |        source:
+            |          repository: kehe
+            |          tag: latest
+            |      run:
+            |        path: /bin/sh
+            |        args:
+            |        - -exc
+            |        - ./ci/build.sh
+            |        dir: my-cool-repo
+            |      inputs:
+            |      - name: my-cool-repo
+            |- name: ..other-path.build.sh
+            |  serial: true
+            |  plan:
+            |  - get: my-cool-repo
+            |    trigger: true
+            |    passed:
+            |    - ci.build.sh
+            |  - task: ..other-path.build.sh
+            |    privileged: true
+            |    config:
+            |      platform: linux
+            |      image_resource:
+            |        type: docker-image
+            |        source:
+            |          repository: kehe
+            |          tag: latest
+            |      params:
+            |        KEY: value
+            |      run:
+            |        path: /bin/sh
+            |        args:
+            |        - -exc
+            |        - ./other-path/build.sh
+            |        dir: my-cool-repo
+            |      inputs:
+            |      - name: my-cool-repo
+            |
                         """.trimMargin()
 
         assertThat(subject.build(manifest)).isEqualTo(wanted)
@@ -186,52 +198,55 @@ class ConcoursePipelineBuilderTest {
         )
 
         val wanted = """|---
-                        |resources:
-                        |- name: $repoName
-                        |  type: git
-                        |  source:
-                        |    uri: $uri
-                        |- name: ${(manifest.tasks[1] as Deploy).name()}
-                        |  type: cf
-                        |  source:
-                        |    api: ${(manifest.tasks.last() as Deploy).api}
-                        |    username: ${(manifest.tasks.last() as Deploy).username}
-                        |    password: ${(manifest.tasks.last() as Deploy).password}
-                        |    organization: ${manifest.team}
-                        |    space: ${(manifest.tasks.last() as Deploy).space}
-                        |    skip_cert_check: false
-                        |jobs:
-                        |- name: ${(manifest.tasks[0] as Run).name()}
-                        |  serial: true
-                        |  plan:
-                        |  - get: ${manifest.getRepoName()}
-                        |    trigger: true
-                        |  - task: ${(manifest.tasks[0] as Run).name()}
-                        |    privileged: true
-                        |    config:
-                        |      platform: linux
-                        |      image_resource:
-                        |        type: docker-image
-                        |        source:
-                        |          repository: busybox
-                        |          tag: yolo
-                        |      run:
-                        |        path: ${(manifest.tasks[0] as Run).script}
-                        |        dir: ${manifest.getRepoName()}
-                        |      inputs:
-                        |      - name: ${manifest.getRepoName()}
-                        |- name: ${(manifest.tasks[1] as Deploy).name()}
-                        |  serial: true
-                        |  plan:
-                        |  - get: $repoName
-                        |    trigger: true
-                        |    passed:
-                        |    - ${(manifest.tasks[0] as Run).name()}
-                        |  - put: ${(manifest.tasks[1] as Deploy).name()}
-                        |    params:
-                        |      path: my-cool-repo
-                        |      manifest: my-cool-repo/ci/manifest.yml
-                        |
+            |resources:
+            |- name: my-cool-repo
+            |  type: git
+            |  source:
+            |    uri: https://github.com/org/my-cool-repo.git
+            |- name: deploy-space
+            |  type: cf
+            |  source:
+            |    api: api
+            |    username: ((cf-credentials.username))
+            |    password: ((cf-credentials.password))
+            |    organization: myOrg
+            |    space: space
+            |    skip_cert_check: false
+            |jobs:
+            |- name: ..test.sh
+            |  serial: true
+            |  plan:
+            |  - get: my-cool-repo
+            |    trigger: true
+            |  - task: ..test.sh
+            |    privileged: true
+            |    config:
+            |      platform: linux
+            |      image_resource:
+            |        type: docker-image
+            |        source:
+            |          repository: busybox
+            |          tag: yolo
+            |      run:
+            |        path: /bin/sh
+            |        args:
+            |        - -exc
+            |        - ./test.sh
+            |        dir: my-cool-repo
+            |      inputs:
+            |      - name: my-cool-repo
+            |- name: deploy-space
+            |  serial: true
+            |  plan:
+            |  - get: my-cool-repo
+            |    trigger: true
+            |    passed:
+            |    - ..test.sh
+            |  - put: deploy-space
+            |    params:
+            |      path: my-cool-repo
+            |      manifest: my-cool-repo/ci/manifest.yml
+            |
                         """.trimMargin()
 
         assertThat(subject.build(manifest)).isEqualTo(wanted)
@@ -273,112 +288,119 @@ class ConcoursePipelineBuilderTest {
                 )
         )
 
-        val wanted = """|---
-                        |resources:
-                        |- name: $repoName
-                        |  type: git
-                        |  source:
-                        |    uri: $uri
-                        |- name: ${(manifest.tasks[1] as Deploy).name()}
-                        |  type: cf
-                        |  source:
-                        |    api: ${(manifest.tasks[1] as Deploy).api}
-                        |    username: ${(manifest.tasks[1] as Deploy).username}
-                        |    password: ${(manifest.tasks[1] as Deploy).password}
-                        |    organization: ${manifest.team}
-                        |    space: ${(manifest.tasks[1] as Deploy).space}
-                        |    skip_cert_check: false
-                        |- name: ${(manifest.tasks[3] as Deploy).name()}
-                        |  type: cf
-                        |  source:
-                        |    api: ${(manifest.tasks[3] as Deploy).api}
-                        |    username: ${(manifest.tasks[3] as Deploy).username}
-                        |    password: ${(manifest.tasks[3] as Deploy).password}
-                        |    organization: ${manifest.team}
-                        |    space: ${(manifest.tasks[3] as Deploy).space}
-                        |    skip_cert_check: false
-                        |- name: docker-push
-                        |  type: docker-image
-                        |  source:
-                        |    username: asd
-                        |    password: asd
-                        |    repository: asd/asd
-                        |jobs:
-                        |- name: ${(manifest.tasks[0] as Run).name()}
-                        |  serial: true
-                        |  plan:
-                        |  - get: ${manifest.getRepoName()}
-                        |    trigger: true
-                        |  - task: ${(manifest.tasks[0] as Run).name()}
-                        |    privileged: true
-                        |    config:
-                        |      platform: linux
-                        |      image_resource:
-                        |        type: docker-image
-                        |        source:
-                        |          repository: ${(manifest.tasks[0] as Run).image}
-                        |          tag: latest
-                        |      run:
-                        |        path: ${(manifest.tasks[0] as Run).script}
-                        |        dir: ${manifest.getRepoName()}
-                        |      inputs:
-                        |      - name: ${manifest.getRepoName()}
-                        |- name: ${(manifest.tasks[1] as Deploy).name()}
-                        |  serial: true
-                        |  plan:
-                        |  - get: $repoName
-                        |    trigger: true
-                        |    passed:
-                        |    - ${(manifest.tasks[0] as Run).name()}
-                        |  - put: ${(manifest.tasks[1] as Deploy).name()}
-                        |    params:
-                        |      path: my-cool-repo
-                        |      manifest: my-cool-repo/manifest.yml
-                        |- name: ${(manifest.tasks[2] as Run).name()}
-                        |  serial: true
-                        |  plan:
-                        |  - get: ${manifest.getRepoName()}
-                        |    trigger: true
-                        |    passed:
-                        |    - ${(manifest.tasks[1] as Deploy).name()}
-                        |  - task: ${(manifest.tasks[2] as Run).name()}
-                        |    privileged: true
-                        |    config:
-                        |      platform: linux
-                        |      image_resource:
-                        |        type: docker-image
-                        |        source:
-                        |          repository: ${(manifest.tasks[0] as Run).image}
-                        |          tag: latest
-                        |      run:
-                        |        path: ${(manifest.tasks[2] as Run).script}
-                        |        dir: ${manifest.getRepoName()}
-                        |      inputs:
-                        |      - name: ${manifest.getRepoName()}
-                        |- name: ${(manifest.tasks[3] as Deploy).name()}
-                        |  serial: true
-                        |  plan:
-                        |  - get: ${manifest.getRepoName()}
-                        |    trigger: true
-                        |    passed:
-                        |    - ${(manifest.tasks[2] as Run).name()}
-                        |  - put: ${(manifest.tasks[3] as Deploy).name()}
-                        |    params:
-                        |      path: ${manifest.getRepoName()}
-                        |      manifest: ${manifest.getRepoName()}/manifest.yml
-                        |      environment_variables:
-                        |        SIMON: Johansson
-                        |- name: docker-push
-                        |  serial: true
-                        |  plan:
-                        |  - get: my-cool-repo
-                        |    trigger: true
-                        |    passed:
-                        |    - deploy-space2
-                        |  - put: docker-push
-                        |    params:
-                        |      build: ${manifest.getRepoName()}
-
+        val wanted = """
+            |---
+            |resources:
+            |- name: my-cool-repo
+            |  type: git
+            |  source:
+            |    uri: https://github.com/org/my-cool-repo.git
+            |- name: deploy-space1
+            |  type: cf
+            |  source:
+            |    api: api1
+            |    username: ((cf-credentials.username))
+            |    password: ((cf-credentials.password))
+            |    organization: myOrg
+            |    space: space1
+            |    skip_cert_check: false
+            |- name: deploy-space2
+            |  type: cf
+            |  source:
+            |    api: api2
+            |    username: ((cf-credentials.username))
+            |    password: ((cf-credentials.password))
+            |    organization: myOrg
+            |    space: space2
+            |    skip_cert_check: false
+            |- name: docker-push
+            |  type: docker-image
+            |  source:
+            |    username: asd
+            |    password: asd
+            |    repository: asd/asd
+            |jobs:
+            |- name: ..test.sh
+            |  serial: true
+            |  plan:
+            |  - get: my-cool-repo
+            |    trigger: true
+            |  - task: ..test.sh
+            |    privileged: true
+            |    config:
+            |      platform: linux
+            |      image_resource:
+            |        type: docker-image
+            |        source:
+            |          repository: busybox
+            |          tag: latest
+            |      run:
+            |        path: /bin/sh
+            |        args:
+            |        - -exc
+            |        - ./test.sh
+            |        dir: my-cool-repo
+            |      inputs:
+            |      - name: my-cool-repo
+            |- name: deploy-space1
+            |  serial: true
+            |  plan:
+            |  - get: my-cool-repo
+            |    trigger: true
+            |    passed:
+            |    - ..test.sh
+            |  - put: deploy-space1
+            |    params:
+            |      path: my-cool-repo
+            |      manifest: my-cool-repo/manifest.yml
+            |- name: ..integration-tests.sh
+            |  serial: true
+            |  plan:
+            |  - get: my-cool-repo
+            |    trigger: true
+            |    passed:
+            |    - deploy-space1
+            |  - task: ..integration-tests.sh
+            |    privileged: true
+            |    config:
+            |      platform: linux
+            |      image_resource:
+            |        type: docker-image
+            |        source:
+            |          repository: busybox
+            |          tag: latest
+            |      run:
+            |        path: /bin/sh
+            |        args:
+            |        - -exc
+            |        - ./integration-tests.sh
+            |        dir: my-cool-repo
+            |      inputs:
+            |      - name: my-cool-repo
+            |- name: deploy-space2
+            |  serial: true
+            |  plan:
+            |  - get: my-cool-repo
+            |    trigger: true
+            |    passed:
+            |    - ..integration-tests.sh
+            |  - put: deploy-space2
+            |    params:
+            |      path: my-cool-repo
+            |      manifest: my-cool-repo/manifest.yml
+            |      environment_variables:
+            |        SIMON: Johansson
+            |- name: docker-push
+            |  serial: true
+            |  plan:
+            |  - get: my-cool-repo
+            |    trigger: true
+            |    passed:
+            |    - deploy-space2
+            |  - put: docker-push
+            |    params:
+            |      build: my-cool-repo
+            |
                         """.trimMargin()
 
         assertThat(subject.build(manifest)).isEqualTo(wanted)

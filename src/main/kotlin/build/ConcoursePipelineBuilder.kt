@@ -167,7 +167,11 @@ class ConcoursePipelineBuilder : IBuild {
                         ),
                         params = run.vars,
                         run = model.pipeline.Run(
-                                path = makeCorrectPath(run.script),
+                                path = "/bin/sh",
+                                args = listOf(
+                                        "-exc",
+                                        makeCorrectPath(run.script)
+                                ),
                                 dir = repoName
                         ),
                         inputs = listOf(Input(repoName))
