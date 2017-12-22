@@ -10,5 +10,4 @@ tasks:
 - task: docker
   username: ((docker.username))
   password: ((docker.password))
-  repository: simonjohansson/linter
-
+  repository: simonjohansson/half-pipe-linter
