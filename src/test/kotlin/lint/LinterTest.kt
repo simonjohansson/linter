@@ -1,6 +1,6 @@
 package lint
 
-import com.google.common.truth.Truth.*
+import com.google.common.truth.Truth.assertThat
 import lint.linters.*
 import model.manifest.Deploy
 import model.manifest.Docker

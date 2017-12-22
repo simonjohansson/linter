@@ -3,8 +3,6 @@ package lint.linters
 import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import model.manifest.Deploy
-import model.manifest.Manifest
-import model.manifest.Repo
 import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito.given

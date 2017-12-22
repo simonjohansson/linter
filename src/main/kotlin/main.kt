@@ -2,13 +2,11 @@ import build.ConcoursePipelineBuilder
 import lint.linters.*
 import model.Result
 import model.hasErrors
-import org.ini4j.Wini
 import parser.Parser
 import reader.Reader
 import secrets.Secrets
 import us.jimschubert.kopper.typed.StringArgument
 import us.jimschubert.kopper.typed.TypedArgumentParser
-import java.io.File
 import kotlin.system.exitProcess
 
 fun printResult(result: Result) {
