@@ -253,7 +253,7 @@ class ConcoursePipelineBuilderTest {
             |        path: /bin/sh
             |        args:
             |        - -exc
-            |        - cf-push
+            |        - /bin/cf-push
             |        dir: my-cool-repo
             |      inputs:
             |      - name: my-cool-repo
@@ -362,7 +362,7 @@ class ConcoursePipelineBuilderTest {
             |        path: /bin/sh
             |        args:
             |        - -exc
-            |        - cf-push
+            |        - /bin/cf-push
             |        dir: my-cool-repo
             |      inputs:
             |      - name: my-cool-repo
@@ -418,7 +418,7 @@ class ConcoursePipelineBuilderTest {
             |        path: /bin/sh
             |        args:
             |        - -exc
-            |        - cf-push
+            |        - /bin/cf-push
             |        dir: my-cool-repo
             |      inputs:
             |      - name: my-cool-repo
