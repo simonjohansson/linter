@@ -10,6 +10,16 @@ data class GitSource(
         val private_key: String = ""
 ) : ISource
 
+data class CFSource(
+        val api: String = "",
+        val username: String = "",
+        val password: String = "",
+        val organization: String = "",
+        val space: String = "",
+        val skip_cert_check: Boolean = false
+
+) : ISource
+
 data class DockerSource(
         val username: String = "",
         val password: String = "",
