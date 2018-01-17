@@ -36,7 +36,7 @@ fun printResults(results: List<Result>) {
 fun lint(arguments: Args): List<Result> {
     val reader = Reader(arguments.path)
     val secrets = Secrets(
-            vaultUrl = "https://vault.tools.engineering",
+            vaultUrl = "https://vault.halfpipe.io",
             vaultToken = arguments.vaultToken
     )
     return Linter(
