@@ -37,7 +37,7 @@ open class SecretsLinter(val secrets: ISecrets) : ILinter {
     private fun badFormatError(badSecret: String) = model.Error(
             message = "Your secret keys must be in the format of '((map-name.key-name))' got '$badSecret'",
             type = model.Error.Type.BAD_VALUE,
-            documentation = "https://github.com/simonjohansson/linter/wiki/Vault#bad_value-key-error")
+            documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#vault-key-error")
 
 
     private fun secretNotFoundError(secret: String, manifest: Manifest): model.Error {
@@ -49,7 +49,7 @@ open class SecretsLinter(val secrets: ISecrets) : ILinter {
         return model.Error(
                 message = message,
                 type = model.Error.Type.BAD_VALUE,
-                documentation = "https://github.com/simonjohansson/linter/wiki/Vault#bad_value-cannot-resolve"
+                documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#vault-cannot-resolve"
         )
     }
 
@@ -75,7 +75,7 @@ open class SecretsLinter(val secrets: ISecrets) : ILinter {
                             message = "You have secrets in your env map, cannot lint unless you pass a vault token with " +
                                     "`-v vaultToken` to linter!",
                             type = model.Error.Type.LINTER_ERROR,
-                            documentation = "https://github.com/simonjohansson/linter/wiki/Vault#linter_error"))
+                            documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#vault-linter-error"))
         }
         return emptyList()
     }

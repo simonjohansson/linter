@@ -44,7 +44,7 @@ open class DockerLinter : ILinter {
             errors.add(model.Error(
                     message = "Required fields '${missingRequiredFields.joinToString(", ")}' are missing",
                     type = Error.Type.MISSING_FIELD,
-                    documentation = "https://github.com/simonjohansson/linter/wiki/Deploy#missing_field"
+                    documentation = ""
             ))
         }
 

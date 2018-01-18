@@ -22,7 +22,7 @@ open class DeployLinter(val reader: IReader) : ILinter {
             errors.add(model.Error(
                     message = "Cannot find Cloud Foundry manifest at path '${deploy.manifest}'",
                     type = Error.Type.MISSING_FILE,
-                    documentation = "https://github.com/simonjohansson/linter/wiki/Deploy#missing_file"
+                    documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#deploy-missing-file"
             ))
         }
         return errors
@@ -47,7 +47,7 @@ open class DeployLinter(val reader: IReader) : ILinter {
             errors.add(model.Error(
                     message = "Required fields '${missingRequiredFields.joinToString(", ")}' are missing",
                     type = Error.Type.MISSING_FIELD,
-                    documentation = "https://github.com/simonjohansson/linter/wiki/Deploy#missing_field"
+                    documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#deploy-missing-field"
             ))
         }
 

@@ -17,7 +17,7 @@ fun environmentVarsKeysLinter(task: ITask): List<model.Error> {
                 model.Error(
                         message = "Environment variable '$key' must be upper case, its a env var yo!",
                         type = model.Error.Type.BAD_VALUE,
-                        documentation = "https://github.com/simonjohansson/linter/wiki/Vault#bad_value-upper-case"
+                        documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#bad-value-upper-case"
                 )
             }
 }

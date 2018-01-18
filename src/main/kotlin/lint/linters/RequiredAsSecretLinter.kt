@@ -23,7 +23,7 @@ open class RequiredAsSecretLinter(): ILinter {
     private fun makeError(keyName: String) = Error(
             message = "'$keyName' must be a secret!",
             type = Error.Type.BAD_VALUE,
-            documentation = "https://github.com/simonjohansson/linter/wiki/Required-Secrets#bad_value"
+            documentation = ""
     )
 
     override fun lint(manifest: Manifest): Result {

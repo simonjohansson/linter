@@ -32,7 +32,7 @@ open class RunLinter(private val reader: IReader) : ILinter {
             errors.add(Error(
                     message = "You must specify a image",
                     type = Error.Type.MISSING_FIELD,
-                    documentation = "https://github.com/simonjohansson/linter/wiki/Run#missing_field-image"
+                    documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#run-missing-field-image"
             ))
 
         }
@@ -46,7 +46,7 @@ open class RunLinter(private val reader: IReader) : ILinter {
             errors.add(Error(
                     message = "You must specify a script",
                     type = Error.Type.MISSING_FIELD,
-                    documentation = "https://github.com/simonjohansson/linter/wiki/Run#missing_field-command"
+                    documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#run-missing-field-command"
             ))
         } else {
             val fileExists = this.reader.fileExists(runTask.script)
@@ -54,7 +54,7 @@ open class RunLinter(private val reader: IReader) : ILinter {
                 errors.add(Error(
                         "File '${runTask.script}' is not found",
                         Error.Type.MISSING_FILE,
-                        documentation = "https://github.com/simonjohansson/linter/wiki/Run#missing_file"
+                        documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#run-missing-file"
                 ))
 
             } else {
@@ -64,7 +64,7 @@ open class RunLinter(private val reader: IReader) : ILinter {
                     errors.add(Error(
                             "File '${runTask.script}' is not executable",
                             Error.Type.NOT_EXECUTABLE,
-                            documentation = "https://github.com/simonjohansson/linter/wiki/Run#not_executable"
+                            documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#run-not-executable"
                     ))
                 }
             }

@@ -21,7 +21,7 @@ open class RequiredFieldsLinter() : ILinter {
             errors.add(model.Error(
                     message = "Required top level field 'team' missing",
                     type = Error.Type.MISSING_FIELD,
-                    documentation = "https://github.com/simonjohansson/linter/wiki/Required-Fields#missing_field-org"
+                    documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#top-level-missing-field-team"
             ))
         }
 
@@ -29,7 +29,7 @@ open class RequiredFieldsLinter() : ILinter {
             errors.add(model.Error(
                     message = "Tasks is empty...",
                     type = Error.Type.MISSING_FIELD,
-                    documentation = "https://github.com/simonjohansson/linter/wiki/Required-Fields#missing_field-tasks"
+                    documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/manifest/#tasks"
             ))
         }
 
@@ -37,7 +37,7 @@ open class RequiredFieldsLinter() : ILinter {
             errors.add(model.Error(
                     message = "Required top level field 'repo' missing",
                     type = Error.Type.MISSING_FIELD,
-                    documentation = "https://github.com/simonjohansson/linter/wiki/Required-Fields#missing_field-repo"
+                    documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/manifest/#repo"
             ))
         }
 

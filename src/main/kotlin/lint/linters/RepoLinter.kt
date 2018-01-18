@@ -20,7 +20,7 @@ open class RepoLinter : ILinter {
                     model.Error(
                             message = "'${manifest.repo.uri}' does not look like a real repo!",
                             type = Error.Type.BAD_VALUE,
-                            documentation = "https://github.com/simonjohansson/linter/wiki/Repo#bad_value"
+                            documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#repo-bad-value"
                     )
             )
         }
@@ -31,7 +31,7 @@ open class RepoLinter : ILinter {
                     model.Error(
                             message = "It looks like you are using SSH, but no private key provided in `repo.deploy_key`",
                             type = Error.Type.MISSING_FIELD,
-                            documentation = "https://github.com/simonjohansson/linter/wiki/Repo#missing_field"
+                            documentation = "https://half-pipe-landing.apps.public.gcp.springernature.io/docs/linter/#repo-missing-field"
                     )
             )
         }
